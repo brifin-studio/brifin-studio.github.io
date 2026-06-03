@@ -1,0 +1,2794 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Работа дизайнеров</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fa;--surface:#fff;--card:#fff;--card-hover:#f1f3f4;
+  --accent:#1a73e8;--accent-dk:#1557b0;--accent-lt:#e8f0fe;
+  --text:#202124;--text-dim:#5f6368;--text-muted:#9aa0a6;
+  --border:#dadce0;--border-strong:#bdc1c6;
+  --new:#1a73e8;--progress:#f29900;--review:#d93025;--done:#1e8e3e;
+  --r:12px;--rs:8px;
+  --sh:0 1px 3px rgba(60,64,67,.12),0 1px 2px rgba(60,64,67,.08);
+  --sh-md:0 4px 12px rgba(60,64,67,.15),0 2px 6px rgba(60,64,67,.08);
+  --sh-lg:0 8px 28px rgba(60,64,67,.18),0 4px 8px rgba(60,64,67,.1);
+}
+html,body{height:100%;font-family:'Google Sans',Roboto,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.3)}
+.hidden{display:none!important}
+button{cursor:pointer;border:none;outline:none;font-family:inherit;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+input,select,textarea{font-family:inherit;font-size:14px;background:#fff;border:1px solid var(--border);border-radius:var(--rs);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;width:100%;padding:10px 12px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,115,232,.12)}
+select option{background:#fff;color:var(--text)}
+textarea{resize:vertical;min-height:80px}
+label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.fg{margin-bottom:16px}
+.fg:last-child{margin-bottom:0}
+.btn-primary{background:var(--accent);color:#fff;padding:10px 22px;border-radius:20px;font-weight:500;box-shadow:0 1px 2px rgba(26,115,232,.3)}
+.btn-primary:hover{background:var(--accent-dk);box-shadow:var(--sh-md);transform:translateY(-1px)}
+.btn-primary:active{transform:scale(.98)}
+.btn-ghost{background:transparent;color:var(--text-dim);padding:8px 16px;border-radius:20px;border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--card-hover);border-color:var(--border-strong);color:var(--text)}
+.btn-sm{padding:6px 14px;font-size:12px}
+
+/* ── LOGIN ── */
+#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#f8f9fa 0%,#e8f0fe 45%,#fce8e6 100%)}
+.logo{font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:-.01em}
+.logo span{color:var(--accent)}
+.logo-sub{color:var(--text-dim);font-size:14px;margin-bottom:36px;text-align:center;max-width:380px;line-height:1.6}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:440px;width:100%;margin-bottom:20px}
+.role-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:24px 18px;text-align:center;cursor:pointer;transition:all .2s;user-select:none;box-shadow:var(--sh)}
+.role-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-2px)}
+.role-card.sel{border-color:var(--accent);background:var(--accent-lt);box-shadow:0 0 0 3px rgba(26,115,232,.15)}
+.role-icon{font-size:36px;margin-bottom:8px}
+.role-title{font-size:15px;font-weight:600;margin-bottom:2px}
+.role-desc{font-size:12px;color:var(--text-dim)}
+.login-box{max-width:440px;width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--sh);animation:fadeUp .2s ease}
+.login-hint{color:var(--text-muted);text-align:center;font-size:13px;padding:10px 0}
+
+/* designer picker */
+.designer-list{display:flex;flex-direction:column;gap:10px}
+.dp-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border:2px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all .2s;background:var(--card)}
+.dp-card:hover{border-color:var(--accent);background:var(--accent-lt);box-shadow:var(--sh);transform:translateX(3px)}
+.dp-name{font-weight:600;font-size:15px;color:var(--text)}
+.dp-role{font-size:12px;color:var(--text-dim);margin-top:1px}
+
+/* ── HEADER ── */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.app-logo{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.app-logo span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:10px}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:100px;padding:5px 14px;font-size:13px;border:1px solid var(--border)}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;color:#fff}
+.role-tag{color:var(--text-muted);font-size:11px}
+
+/* filter toggle */
+.filter-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:3px;gap:2px}
+.ftog{background:transparent;color:var(--text-dim);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:500}
+.ftog.active{background:var(--surface);color:var(--accent);box-shadow:var(--sh);font-weight:600}
+
+/* ── TABS ── */
+.tabs{display:flex;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab-btn{background:transparent;color:var(--text-muted);padding:12px 20px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;border-radius:0}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-btn:hover:not(.active){color:var(--text-dim);background:var(--bg)}
+
+/* ── CLIENT ── */
+#client{min-height:100vh;display:flex;flex-direction:column}
+.tab-content{flex:1;padding:28px 24px;max-width:860px;margin:0 auto;width:100%}
+.section-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:20px}
+
+/* type grid */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;margin-bottom:24px}
+.type-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--rs);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;user-select:none;box-shadow:var(--sh)}
+.type-card:hover{border-color:var(--accent);background:var(--accent-lt);box-shadow:var(--sh-md);transform:translateY(-1px)}
+.type-card.sel{border-color:var(--accent);background:var(--accent-lt);box-shadow:0 0 0 3px rgba(26,115,232,.12)}
+.type-emoji{font-size:24px;margin-bottom:6px;display:block}
+.type-name{font-size:11px;font-weight:600;color:var(--text-dim)}
+
+/* form card */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh);animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.form-title{font-size:17px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-actions{display:flex;gap:10px;margin-top:20px}
+
+/* checkbox tags */
+.check-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.check-tag{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:5px 12px;cursor:pointer;font-size:12px;transition:all .15s;user-select:none;white-space:nowrap;color:var(--text-dim)}
+.check-tag input{display:none}
+.check-tag.checked{background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+
+/* ── WORKLOAD ── */
+.wl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden;box-shadow:var(--sh)}
+.wl-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.wl-name{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.task-cnt{background:var(--accent-lt);color:var(--accent);border-radius:100px;padding:2px 10px;font-size:11px;font-weight:700}
+.wl-body{padding:14px 18px;display:flex;flex-direction:column;gap:9px}
+.mini-card{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 13px;gap:10px}
+.mini-info{flex:1;min-width:0}
+.mini-title{font-weight:500;font-size:13px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-meta{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mini-empty{color:var(--text-muted);font-size:12px;text-align:center;padding:8px}
+
+/* ── STATUS BADGES ── */
+.sbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:100px;padding:3px 10px;white-space:nowrap}
+.sbadge::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.s-new{background:#e8f0fe;color:#1a73e8}.s-new::before{background:var(--new)}
+.s-progress{background:#fef9e7;color:#f29900}.s-progress::before{background:var(--progress)}
+.s-review{background:#fce8e6;color:#d93025}.s-review::before{background:var(--review)}
+.s-done{background:#e6f4ea;color:#1e8e3e}.s-done::before{background:var(--done)}
+.p-urgent{background:#fce8e6;color:#d93025;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700}
+.p-high{background:#fef9e7;color:#f29900;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700}
+
+/* ── KANBAN ── */
+#designer{height:100vh;display:flex;flex-direction:column}
+.kanban{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:20px;overflow-x:auto;min-height:0}
+.kcol{background:#f1f3f4;border:2px solid transparent;border-radius:var(--r);display:flex;flex-direction:column;min-width:220px;overflow:hidden;transition:border-color .15s,background .15s}
+.kcol.drag-over{background:#e8f0fe;border-color:var(--accent);border-style:dashed}
+.kcol-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(255,255,255,.7);backdrop-filter:blur(4px)}
+.kcol-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim)}
+.col-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.kcol-cnt{background:var(--surface);color:var(--text-muted);border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;border:1px solid var(--border);box-shadow:var(--sh)}
+.kcol-body{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:9px}
+
+/* ── TASK CARD ── */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:13px;transition:all .2s;position:relative;border-left:3px solid transparent;box-shadow:var(--sh);cursor:grab}
+.tcard:hover{box-shadow:var(--sh-md);transform:translateY(-1px);border-color:var(--border-strong)}
+.tcard:active{cursor:grabbing}
+.tcard.dragging{opacity:.45;box-shadow:var(--sh-lg);transform:rotate(1.5deg) scale(1.02)}
+.tcard[data-p="urgent"]{border-left-color:var(--review)}
+.tcard[data-p="high"]{border-left-color:var(--progress)}
+.tcard-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:7px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.tcard-title{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:6px;color:var(--text)}
+.tcard-client{font-size:11px;color:var(--text-dim);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.tcard-extra{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.tcard-chip{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--text-dim)}
+.tcard-desc{font-size:11px;color:var(--text-dim);line-height:1.5;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;white-space:pre-line;word-break:break-word}
+.tcard-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+.deadline{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:3px}
+.deadline.ov{color:var(--review);font-weight:600}
+.deadline.soon{color:var(--progress);font-weight:600}
+.edit-btn{background:none;color:var(--text-muted);font-size:18px;line-height:1;padding:2px 6px;border-radius:6px}
+.edit-btn:hover{background:var(--bg);color:var(--accent)}
+
+/* ── EDIT MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(32,33,36,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:overlayIn .2s ease}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--card);border-radius:var(--r);padding:28px;width:100%;max-width:520px;box-shadow:var(--sh-lg);animation:scaleIn .2s ease}
+@keyframes scaleIn{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:20px;color:var(--text)}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+
+/* ── EMPTY / LOADING ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;color:var(--text-muted);gap:6px;text-align:center}
+.empty-icon{font-size:28px;opacity:.5}
+.empty p{font-size:12px}
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--text-muted);font-size:13px;flex-direction:column}
+.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:11px 16px;font-size:13px;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:9px;animation:toastIn .25s ease;max-width:300px;color:var(--text)}
+.toast.ok{border-left:3px solid var(--done)}
+.toast.err{border-left:3px solid var(--review)}
+@keyframes toastIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── CONTENT CARDS ── */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+@media(max-width:700px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.card-grid{grid-template-columns:1fr}}
+.scard{border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;background:var(--surface)}
+.scard-head{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);background:var(--bg);user-select:none;transition:all .15s}
+.scard-head:hover,.scard-head.open{background:var(--accent-lt);color:var(--accent)}
+.scard-arrow{font-size:10px;transition:transform .2s;display:inline-block}
+.scard-head.open .scard-arrow{transform:rotate(180deg)}
+.scard-body{display:none;padding:10px;border-top:1px solid var(--border)}
+.scard-body.open{display:block;animation:fadeUp .15s ease}
+.scard-desc{min-height:56px;font-size:12px;margin-bottom:8px}
+.file-btn{display:flex;align-items:center;gap:7px;cursor:pointer;padding:7px 10px;border:1.5px dashed var(--border);border-radius:var(--rs);background:var(--bg);font-size:12px;color:var(--text-dim);transition:all .15s;width:100%}
+.file-btn:hover{border-color:var(--accent);background:var(--accent-lt);color:var(--accent)}
+.file-btn input[type=file]{display:none}
+.file-fname{font-size:11px;color:var(--accent);margin-left:auto;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── PRES EDITOR ── */
+.pres-scenario-btns{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.pres-scen-btn{flex:1;min-width:130px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--rs);background:var(--card);cursor:pointer;font-size:13px;font-weight:500;color:var(--text-dim);text-align:center;transition:all .2s;justify-content:center;line-height:1.4}
+.pres-scen-btn:hover{border-color:var(--accent);color:var(--text)}
+.pres-scen-btn.sel{border-color:var(--accent);background:var(--accent-lt);color:var(--accent);font-weight:600}
+.pres-slide-wrap{margin-bottom:22px}
+.pres-slide-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:.06em;text-transform:uppercase}
+.pres-canvas{background:#fff;border:1.5px solid var(--border-strong);border-radius:6px;aspect-ratio:16/9;padding:14px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;box-shadow:inset 0 1px 3px rgba(0,0,0,.04)}
+.pres-canvas-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;pointer-events:none}
+.pres-block{display:flex;align-items:flex-start;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.pres-block-icon{font-size:14px;flex-shrink:0;margin-top:2px;user-select:none}
+.pres-block-content{flex:1;min-width:0;font-size:13px;color:var(--text);outline:none;min-height:22px;word-break:break-word;white-space:pre-wrap;caret-color:var(--accent)}
+.pres-block-content:empty::before{content:attr(data-placeholder);color:var(--text-muted);pointer-events:none;font-style:italic;white-space:pre-wrap}
+.pres-block-content:focus{background:transparent}
+.pres-block-del{background:none;color:var(--text-muted);font-size:13px;padding:0 4px;flex-shrink:0;margin-top:1px;border-radius:4px;line-height:1}
+.pres-block-del:hover{color:var(--review);background:rgba(217,48,37,.08)}
+.pres-slide-actions{display:flex;gap:8px;margin-top:9px}
+.pres-add-after{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:var(--rs);background:transparent;color:var(--text-muted);font-size:12px;margin-top:12px;transition:all .15s;justify-content:center}
+.pres-add-after:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+
+/* ── PRES IMAGE BLOCK ── */
+.pres-block-img{flex-direction:column}
+.pres-img-desc{padding:6px 8px!important;min-height:unset!important;resize:none;margin-bottom:7px}
+.pres-img-upload{display:flex;align-items:center;gap:7px;border:1.5px dashed var(--border);border-radius:var(--rs);padding:8px 12px;cursor:pointer;background:var(--bg);font-size:12px;color:var(--text-dim);transition:all .15s;width:100%}
+.pres-img-upload:hover{border-color:var(--accent);background:var(--accent-lt);color:var(--accent)}
+.pres-img-upload input[type=file]{display:none}
+.pres-img-preview-wrap{position:relative;border-radius:6px;width:100%;display:block}
+.pres-img-preview{width:100%;height:220px;display:block;object-fit:cover;border-radius:5px;border:1px solid var(--border);background:#f8f9fa}
+.pres-img-stickers{position:absolute;top:0;left:0;right:0;height:220px;z-index:6;pointer-events:none}
+.pres-img-stickers .pres-annot{pointer-events:auto}
+.pres-img-clickzone{position:absolute;top:0;left:0;right:0;height:220px;z-index:5;cursor:crosshair;border-radius:5px}
+.pres-img-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.pres-annot-mode-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;border:1.5px solid var(--border);background:var(--card);color:var(--text-dim);cursor:pointer;transition:all .15s}
+.pres-annot-mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pres-annot-mode-btn.active{background:#fff9c4;border-color:#f9a825;color:#c17900}
+.pres-annot{position:absolute;z-index:10;min-width:150px;max-width:280px;cursor:move}
+.pres-annot-body{background:#fff176;border:1px solid #f9a825;border-radius:5px;padding:5px 7px;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:flex-start;gap:4px}
+.pres-annot-arrow{position:absolute;bottom:-7px;left:12px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #f9a825;pointer-events:none}
+.pres-annot-text{flex:1;font-size:11px;color:#3d2c00;outline:none;min-height:30px;word-break:break-word;word-wrap:break-word;white-space:normal;overflow-wrap:break-word;cursor:text;line-height:1.4}
+.pres-annot-text:empty::before{content:'Пометка…';color:#c8a84b;font-style:italic;pointer-events:none}
+.pres-annot-del{background:none;color:#c17900;font-size:11px;padding:0 2px;flex-shrink:0;line-height:1;border-radius:3px;cursor:pointer}
+.pres-annot-del:hover{background:rgba(249,168,37,.25)}
+.pres-status-btn{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.pres-status-ready{background:#e6f4ea;color:#1e8e3e;border-color:rgba(30,142,62,.25)}
+.pres-status-ready:hover{background:#ceead6}
+.pres-status-discuss{background:#fef9e7;color:#f29900;border-color:rgba(242,153,0,.3)}
+.pres-status-discuss:hover{background:#fde6a0}
+.pres-tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.pres-tag-btn{padding:3px 10px;font-size:11px;font-weight:500;border-radius:100px;border:1px solid var(--border);background:var(--bg);color:var(--text-dim);cursor:pointer;transition:all .15s;white-space:nowrap}
+.pres-tag-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+.pres-tag-btn.active{background:var(--accent-lt);border-color:var(--accent);color:var(--accent);font-weight:600}
+.pres-file-btn{display:inline-flex;align-items:center;gap:7px;border:1.5px dashed var(--border);border-radius:var(--rs);padding:8px 14px;cursor:pointer;background:var(--bg);font-size:12px;color:var(--text-dim);transition:all .15s;white-space:nowrap;flex-shrink:0}
+.pres-file-btn:hover{border-color:var(--accent);background:var(--accent-lt);color:var(--accent)}
+.pres-file-btn input[type=file]{display:none}
+.pres-file-btn-full{display:flex;width:100%;justify-content:center}
+.pres-ref-section{border-top:1px solid var(--border);margin-top:20px;padding-top:20px;display:flex;flex-direction:column;gap:16px}
+.pres-ref-hint{font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+.pres-file-row{display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px}
+
+/* ── PRES FULLSCREEN ── */
+.pres-img-expand-btn{position:absolute;top:6px;right:6px;z-index:8;background:rgba(0,0,0,.45);color:#fff;border-radius:5px;padding:4px 5px;font-size:13px;line-height:1;border:none;transition:background .15s;cursor:pointer}
+.pres-img-expand-btn:hover{background:rgba(0,0,0,.72)}
+.pres-fullscreen-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:50px 40px}
+.pres-fullscreen-close{position:fixed;top:14px;right:16px;background:rgba(255,255,255,.15);color:#fff;border-radius:50%;width:40px;height:40px;font-size:20px;z-index:510;cursor:pointer;justify-content:center;flex-shrink:0;transition:background .15s;border:none;line-height:1}
+.pres-fullscreen-close:hover{background:rgba(255,255,255,.3)}
+.pres-fullscreen-inner{position:relative;line-height:0;max-width:calc(100vw - 80px);max-height:calc(100vh - 100px)}
+.pres-fullscreen-img{max-width:calc(100vw - 80px);max-height:calc(100vh - 100px);display:block;border-radius:8px;object-fit:contain;pointer-events:none;user-select:none}
+.pres-fullscreen-stickers{position:absolute;inset:0;z-index:6;pointer-events:none}
+.pres-fullscreen-stickers .pres-annot{pointer-events:auto}
+.pres-fullscreen-clickzone{position:absolute;inset:0;z-index:5;cursor:crosshair}
+.pres-fullscreen-hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:12px;padding:5px 14px;border-radius:100px;pointer-events:none;z-index:510}
+
+/* ── LANDING EDITOR ── */
+.land-section-wrap{margin-bottom:14px}
+.land-section-card{display:flex;background:#fafafa;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh)}
+.land-section-num{font-size:26px;font-weight:700;color:#c5c8ca;line-height:1;padding:16px 12px 16px 14px;flex-shrink:0;user-select:none;min-width:46px;text-align:right;display:flex;align-items:flex-start;padding-top:18px}
+.land-section-body{flex:1;min-width:0;padding:14px 16px}
+.land-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.land-section-title{font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--text-dim);text-transform:uppercase}
+.land-type-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.land-type-pill{padding:4px 11px;font-size:11px;font-weight:500;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:all .15s;white-space:nowrap}
+.land-type-pill:hover{border-color:var(--accent);color:var(--accent)}
+.land-type-pill.active{background:var(--accent-lt);border-color:var(--accent);color:var(--accent);font-weight:600}
+.land-blocks{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.land-block-actions{display:flex;gap:8px}
+.land-add-after{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:var(--rs);background:transparent;color:var(--text-muted);font-size:12px;margin-top:8px;transition:all .15s;display:flex;justify-content:center;align-items:center;cursor:pointer}
+.land-add-after:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+
+/* ── OUTDOOR EDITOR ── */
+.outdoor-block-card{display:flex;background:#fff8f0;border:1px solid var(--border);border-left:3px solid #f57c00;border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);margin-bottom:9px;align-items:stretch}
+.outdoor-block-num{font-size:26px;font-weight:700;color:#c5c8ca;line-height:1;padding:14px 12px 0 14px;flex-shrink:0;user-select:none;min-width:46px;text-align:right;display:flex;align-items:flex-start;padding-top:16px}
+.outdoor-type-pill{padding:4px 11px;font-size:11px;font-weight:500;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:all .15s;white-space:nowrap}
+.outdoor-type-pill:hover{border-color:#f57c00;color:#f57c00}
+.outdoor-type-pill.active{background:#fff3e0;border-color:#f57c00;color:#e65100;font-weight:600}
+.outdoor-tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.outdoor-block-actions{display:flex;gap:8px;margin-top:10px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .form-row,.form-row-3{grid-template-columns:1fr}
+  .kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}
+  .role-grid{grid-template-columns:1fr}
+  .type-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:480px){
+  .kanban{grid-template-columns:minmax(260px,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="login">
+  <div class="logo">Работа <span>дизайнеров</span></div>
+  <div class="logo-sub">Пространство где можно создать задачи дизайнерам и посмотреть их загруженность</div>
+
+  <div class="role-grid">
+    <div class="role-card" data-role="designer" onclick="pickRole('designer')">
+      <div class="role-icon">🎨</div>
+      <div class="role-title">Дизайнер</div>
+      <div class="role-desc">Работаю с задачами</div>
+    </div>
+    <div class="role-card" data-role="client" onclick="pickRole('client')">
+      <div class="role-icon">💼</div>
+      <div class="role-title">Заказчик</div>
+      <div class="role-desc">Создаю задачи</div>
+    </div>
+  </div>
+
+  <div class="login-box" id="login-box">
+    <p class="login-hint">Выберите роль выше</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CLIENT ═══════════════ -->
+<div id="client" class="hidden">
+  <header class="app-header">
+    <div class="app-logo">Работа <span>дизайнеров</span></div>
+    <div class="header-right">
+      <div class="user-pill">
+        <div class="avatar" id="c-av" style="background:var(--accent)">?</div>
+        <span id="c-nm">—</span>
+        <span class="role-tag">· Заказчик</span>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="logout()">Выйти</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="create" onclick="switchTab('create')">＋ Создать задачу</button>
+    <button class="tab-btn" data-tab="workload" onclick="switchTab('workload')">👥 Загрузка дизайнеров</button>
+  </div>
+
+  <!-- CREATE -->
+  <div id="tab-create" class="tab-content">
+    <div class="section-title">Новая задача</div>
+    <div class="type-grid" id="type-grid"></div>
+    <div id="task-form" class="hidden">
+      <div class="form-card">
+        <div class="form-title" id="form-heading">Задача</div>
+        <div class="fg">
+          <label class="field-label">Название задачи</label>
+          <input id="f-title" type="text" placeholder="Кратко опишите задачу…">
+        </div>
+        <div id="dyn-fields"></div>
+        <div class="form-row-3">
+          <div class="fg">
+            <label class="field-label">Кому</label>
+            <select id="f-assignee">
+              <option value="">— Выберите дизайнера —</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="field-label">Дедлайн</label>
+            <input id="f-deadline" type="date">
+          </div>
+          <div class="fg">
+            <label class="field-label">Приоритет</label>
+            <select id="f-priority">
+              <option value="normal">Обычный</option>
+              <option value="high">Высокий</option>
+              <option value="urgent">Срочно!</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Описание</label>
+          <textarea id="f-desc" placeholder="Подробности, пожелания, требования…"></textarea>
+        </div>
+        <div class="fg">
+          <label class="field-label">Референсы / ссылки</label>
+          <input id="f-refs" type="text" placeholder="https://… (через запятую)">
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="submitTask()">Отправить задачу</button>
+          <button class="btn-ghost" onclick="resetForm()">Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKLOAD -->
+  <div id="tab-workload" class="tab-content hidden">
+    <div class="section-title">Загрузка дизайнеров</div>
+    <div id="wl-list"><div class="loading"><div class="spinner"></div>Загрузка…</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ DESIGNER ═══════════════ -->
+<div id="designer" class="hidden">
+  <header class="app-header">
+    <div class="app-logo">Работа <span>дизайнеров</span></div>
+    <div class="header-right">
+      <div class="filter-toggle">
+        <button class="ftog active" data-f="mine" onclick="setFilter('mine')">Мои задачи</button>
+        <button class="ftog" data-f="all" onclick="setFilter('all')">Все задачи</button>
+      </div>
+      <div class="user-pill">
+        <div class="avatar" id="d-av">?</div>
+        <span id="d-nm">—</span>
+        <span class="role-tag">· Дизайнер</span>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="logout()">Выйти</button>
+    </div>
+  </header>
+
+  <div class="kanban">
+    <div class="kcol">
+      <div class="kcol-head">
+        <div class="kcol-title"><span class="col-dot" style="background:var(--new)"></span>Новое</div>
+        <span class="kcol-cnt" id="cnt-new">0</span>
+      </div>
+      <div class="kcol-body" id="col-new"
+        ondragover="colDragOver(event)" ondragleave="colDragLeave(event)" ondrop="colDrop(event,'new')"></div>
+    </div>
+    <div class="kcol">
+      <div class="kcol-head">
+        <div class="kcol-title"><span class="col-dot" style="background:var(--progress)"></span>В работе</div>
+        <span class="kcol-cnt" id="cnt-progress">0</span>
+      </div>
+      <div class="kcol-body" id="col-progress"
+        ondragover="colDragOver(event)" ondragleave="colDragLeave(event)" ondrop="colDrop(event,'progress')"></div>
+    </div>
+    <div class="kcol">
+      <div class="kcol-head">
+        <div class="kcol-title"><span class="col-dot" style="background:var(--review)"></span>На правках</div>
+        <span class="kcol-cnt" id="cnt-review">0</span>
+      </div>
+      <div class="kcol-body" id="col-review"
+        ondragover="colDragOver(event)" ondragleave="colDragLeave(event)" ondrop="colDrop(event,'review')"></div>
+    </div>
+    <div class="kcol">
+      <div class="kcol-head">
+        <div class="kcol-title"><span class="col-dot" style="background:var(--done)"></span>Готово</div>
+        <span class="kcol-cnt" id="cnt-done">0</span>
+      </div>
+      <div class="kcol-body" id="col-done"
+        ondragover="colDragOver(event)" ondragleave="colDragLeave(event)" ondrop="colDrop(event,'done')"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EDIT MODAL ═══════════════ -->
+<div id="edit-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">✏️ Редактировать задачу</div>
+    <div class="fg">
+      <label class="field-label">Название</label>
+      <input id="em-title" type="text">
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label class="field-label">Дедлайн</label>
+        <input id="em-deadline" type="date">
+      </div>
+      <div class="fg">
+        <label class="field-label">Приоритет</label>
+        <select id="em-priority">
+          <option value="normal">Обычный</option>
+          <option value="high">Высокий</option>
+          <option value="urgent">Срочно!</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="field-label">Описание</label>
+      <textarea id="em-desc"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Отмена</button>
+      <button class="btn-primary" onclick="saveEdit()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- ═══════════════ PRES FULLSCREEN ═══════════════ -->
+<div id="pres-fullscreen-modal" class="pres-fullscreen-overlay hidden" onclick="presFullscreenBgClick(event)">
+  <button class="pres-fullscreen-close" onclick="presCloseFullscreen()">✕</button>
+  <div class="pres-fullscreen-inner" id="pres-fullscreen-inner" onclick="event.stopPropagation()"></div>
+  <div class="pres-fullscreen-hint">Кликните по изображению, чтобы добавить пометку · Esc — закрыть</div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, setDoc, query, orderBy, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyCX5Dn4Fy2jmAq8E_UXf_K_DsCGMONxcGw",
+  authDomain:"designer-tasks.firebaseapp.com",
+  projectId:"designer-tasks",
+  storageBucket:"designer-tasks.firebasestorage.app",
+  messagingSenderId:"610491267813",
+  appId:"1:610491267813:web:3d455c48a7b6722736b20c"
+}));
+
+// ── CONSTANTS ──
+const DESIGNERS = [
+  {id:'artem',  name:'Артём',      color:'#1a73e8'},
+  {id:'des2',   name:'Дизайнер 2', color:'#0f9d58'},
+  {id:'des3',   name:'Дизайнер 3', color:'#e37400'},
+];
+
+const TYPES = [
+  {id:'video',    e:'🎬', n:'Видео'},
+  {id:'post',     e:'📱', n:'Соцсети'},
+  {id:'pres',     e:'📊', n:'Презентация'},
+  {id:'landing',  e:'🌐', n:'Лендинг'},
+  {id:'outdoor',  e:'🏙️', n:'Наружная реклама'},
+  {id:'print',    e:'🖨️', n:'Полиграфия'},
+  {id:'brand',    e:'✨', n:'Фирм. стиль'},
+  {id:'edits',    e:'✏️', n:'Правки'},
+  {id:'campaign', e:'📣', n:'Рекл. кампания'},
+];
+
+const PRES_TAGS=[
+  {id:'header', label:'Заголовок',      ph:'Например: Клубная резиденция «Ботаника Хиллс»'},
+  {id:'body',   label:'Основной текст', ph:'Например: Описание концепции, преимуществ, характеристик...'},
+  {id:'list',   label:'Список',         ph:'Каждый пункт с новой строки, например:\n• 16 лет в проектировании\n• > 100 реализованных проектов'},
+  {id:'fact',   label:'Цифра/факт',     ph:'Например: 80% видовых квартир'},
+  {id:'caption',label:'Подпись',        ph:'Например: Источник, сноска, дополнительная информация'},
+];
+
+const TYPE_FIELDS = {
+  video:`
+    <div class="form-row-3">
+      <div class="fg"><label class="field-label">Платформа</label>
+        <select id="f-platform"><option>YouTube</option><option>TikTok</option><option>Instagram</option><option>ВКонтакте</option><option>Rutube</option><option>Другое</option></select></div>
+      <div class="fg"><label class="field-label">Ориентация</label>
+        <select id="f-orient"><option>Горизонтальная 16:9</option><option>Вертикальная 9:16</option><option>Квадрат 1:1</option></select></div>
+      <div class="fg"><label class="field-label">Разрешение</label>
+        <input type="text" id="f-resolution" placeholder="1920x1080"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label class="field-label">Длительность (сек)</label><input type="number" id="f-dur" placeholder="30" min="1"></div>
+      <div class="fg"><label class="field-label">Формат файла</label>
+        <select id="f-fileformat"><option>MP4</option><option>MOV</option><option>AVI</option><option>GIF</option><option>Other</option></select></div>
+    </div>`,
+  post:`
+    <div class="form-row">
+      <div class="fg"><label class="field-label">Название задачи</label>
+        <input id="f-title-post" type="text" placeholder="Кратко опишите задачу…"></div>
+      <div class="fg"><label class="field-label">Платформа</label>
+        <select id="f-platform"><option>Instagram</option><option>ВКонтакте</option><option>Telegram</option><option>TikTok</option><option>Другое</option></select></div>
+    </div>
+    <div class="fg"><label class="field-label">Формат</label>
+      <div class="check-group" id="cg-postfmt">
+        <label class="check-tag" onclick="toggleCheck(this)"><input type="checkbox" value="Сторис"> Сторис</label>
+        <label class="check-tag" onclick="toggleCheck(this)"><input type="checkbox" value="Пост"> Пост</label>
+        <label class="check-tag" onclick="toggleCheck(this)"><input type="checkbox" value="Вертикальный пост"> Вертикальный пост</label>
+      </div>
+    </div>
+    <div class="fg"><label class="field-label">Карточки контента</label>
+      <div class="card-grid">
+        ${Array.from({length:9},(_,i)=>`
+          <div class="scard">
+            <div class="scard-head" onclick="toggleScard(this)">
+              <span>Карточка ${i+1}</span>
+              <span class="scard-arrow">▼</span>
+            </div>
+            <div class="scard-body">
+              <textarea id="f-c${i+1}" class="scard-desc" placeholder="Описание контента…"></textarea>
+              <label class="file-btn">
+                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="showFileName(this)">
+                📎 Прикрепить файл
+                <span class="file-fname"></span>
+              </label>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`,
+  pres:`
+    <div class="pres-scenario-btns">
+      <button type="button" class="pres-scen-btn" data-scenario="new" onclick="selectPresScenario('new')">🆕 Создать новую</button>
+      <button type="button" class="pres-scen-btn" data-scenario="edits" onclick="selectPresScenario('edits')">✏️ Внести правки</button>
+      <button type="button" class="pres-scen-btn" data-scenario="adapt" onclick="selectPresScenario('adapt')">🔄 Адаптировать под новый объект</button>
+    </div>
+    <input type="hidden" id="f-pres-scenario">
+    <div id="pres-new-section" class="hidden">
+      <div id="pres-editor"></div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример презентации или визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="pres-reflink-input" oninput="presUpdateRefLink(this.value)" placeholder="https://… ссылка на презентацию, сайт, папку">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf,.pptx" onchange="presSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="pres-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото объекта, тексты, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.pptx,.ai,.eps,.zip" onchange="presAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="pres-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="pres-edit-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Ссылка на файл</label>
+        <input type="text" id="f-pres-flink" placeholder="https://…">
+      </div>
+      <div id="pres-editor-edit"></div>
+      <div class="fg">
+        <input type="file" id="f-pres-files" multiple accept=".jpg,.jpeg,.png,.pdf,.pptx" style="display:none" onchange="presAddFiles(this)">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('f-pres-files').click()">📎 Прикрепить файлы</button>
+        <div id="f-pres-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример презентации или визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="pres-reflink-input" oninput="presUpdateRefLink(this.value)" placeholder="https://… ссылка на презентацию, сайт, папку">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf,.pptx" onchange="presSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="pres-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото объекта, тексты, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.pptx,.ai,.eps,.zip" onchange="presAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="pres-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="pres-adapt-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Ссылка на оригинальный файл</label>
+        <input type="text" id="f-pres-flink-adapt" placeholder="https://…">
+      </div>
+      <div class="fg">
+        <label class="field-label">Что нужно адаптировать</label>
+        <textarea id="f-adapt-notes" style="min-height:130px" placeholder="Название нового объекта, адрес, ключевые отличия от оригинала&#10;Например: заменить все упоминания «Ботаника Хиллс» на «Парк Плаза»&#10;Обновить фотографии фасада и планировки"></textarea>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:5px">Опишите изменения в свободной форме</p>
+      </div>
+      <div id="pres-editor-adapt"></div>
+      <div class="fg">
+        <input type="file" id="f-pres-files-adapt" multiple accept=".jpg,.jpeg,.png,.pdf,.pptx" style="display:none" onchange="presAddFiles(this)">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('f-pres-files-adapt').click()">📎 Прикрепить файлы</button>
+        <div id="f-pres-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример презентации или визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="pres-reflink-input" oninput="presUpdateRefLink(this.value)" placeholder="https://… ссылка на презентацию, сайт, папку">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf,.pptx" onchange="presSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="pres-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото объекта, тексты, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.pptx,.ai,.eps,.zip" onchange="presAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="pres-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>`,
+  landing:`
+    <div class="pres-scenario-btns">
+      <button type="button" class="pres-scen-btn" data-scenario="new" onclick="selectLandingScenario('new')">🆕 Создать новый</button>
+      <button type="button" class="pres-scen-btn" data-scenario="edits" onclick="selectLandingScenario('edits')">✏️ Внести правки</button>
+      <button type="button" class="pres-scen-btn" data-scenario="adapt" onclick="selectLandingScenario('adapt')">🔄 Адаптировать</button>
+    </div>
+    <input type="hidden" id="f-landing-scenario">
+    <div id="landing-new-section" class="hidden">
+      <div id="landing-editor-new"></div>
+    </div>
+    <div id="landing-edit-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Ссылка на файл</label>
+        <input type="text" id="f-landing-flink" placeholder="https://…">
+      </div>
+      <div id="landing-editor-edit"></div>
+      <div class="fg">
+        <input type="file" id="f-landing-files-edit" multiple accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="landingAddFiles(this)">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('f-landing-files-edit').click()">📎 Прикрепить файлы</button>
+        <div class="land-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример сайта или визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="land-reflink-input" oninput="landingUpdateRefLink(this.value)" placeholder="https://… ссылка на сайт, папку">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="landingSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="land-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото, тексты, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.zip" onchange="landingAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="land-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="landing-adapt-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Ссылка на оригинальный файл</label>
+        <input type="text" id="f-landing-flink-adapt" placeholder="https://…">
+      </div>
+      <div class="fg">
+        <label class="field-label">Что нужно адаптировать</label>
+        <textarea id="f-landing-adapt-notes" style="min-height:100px" placeholder="Название нового проекта, адрес, ключевые отличия…"></textarea>
+      </div>
+      <div id="landing-editor-adapt"></div>
+      <div class="fg">
+        <input type="file" id="f-landing-files-adapt" multiple accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="landingAddFiles(this)">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('f-landing-files-adapt').click()">📎 Прикрепить файлы</button>
+        <div class="land-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример сайта или визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="land-reflink-input" oninput="landingUpdateRefLink(this.value)" placeholder="https://… ссылка на сайт, папку">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="landingSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="land-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото, тексты, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.zip" onchange="landingAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="land-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>`,
+  outdoor:`
+    <div class="pres-scenario-btns">
+      <button type="button" class="pres-scen-btn" data-scenario="new" onclick="selectOutdoorScenario('new')">🆕 Новый макет</button>
+      <button type="button" class="pres-scen-btn" data-scenario="edits" onclick="selectOutdoorScenario('edits')">✏️ Внести правки</button>
+      <button type="button" class="pres-scen-btn" data-scenario="adapt" onclick="selectOutdoorScenario('adapt')">🔄 Адаптация под форматы</button>
+    </div>
+    <input type="hidden" id="f-outdoor-scenario">
+    <div id="outdoor-new-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Тип носителя</label>
+        <div style="display:flex;flex-wrap:wrap;gap:5px" id="outdoor-media-types"></div>
+      </div>
+      <div class="form-row-3">
+        <div class="fg"><label class="field-label">Ширина (мм)</label><input type="number" id="f-outdoor-width" placeholder="6000"></div>
+        <div class="fg"><label class="field-label">Высота (мм)</label><input type="number" id="f-outdoor-height" placeholder="3000"></div>
+        <div class="fg"><label class="field-label">Разрешение (dpi)</label><input type="number" id="f-outdoor-dpi" placeholder="72"></div>
+      </div>
+      <div class="fg">
+        <label class="field-label">Будет анимация</label>
+        <div style="display:flex;gap:7px">
+          <button type="button" id="outdoor-anim-yes" class="outdoor-type-pill" onclick="outdoorSetAnimation(true)">Да</button>
+          <button type="button" id="outdoor-anim-no" class="outdoor-type-pill active" onclick="outdoorSetAnimation(false)">Нет</button>
+        </div>
+        <div id="outdoor-anim-desc-wrap" class="hidden" style="margin-top:10px">
+          <label class="field-label">Описание анимации</label>
+          <textarea id="f-anim-desc" placeholder="Что движется, как, длительность…"></textarea>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="field-label">Контент</label>
+        <div id="outdoor-editor-new"></div>
+        <div class="outdoor-block-actions">
+          <button type="button" class="btn-ghost btn-sm" onclick="outdoorAddBlock('text')">+ Текст</button>
+          <button type="button" class="btn-ghost btn-sm" onclick="outdoorAddBlock('image')">🖼 Изображение</button>
+        </div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="outdoor-reflink-input" oninput="outdoorUpdateRefLink(this.value)" placeholder="https://…">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="outdoorSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="outdoor-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.zip" onchange="outdoorAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="outdoor-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="outdoor-edit-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Ссылка на файл</label>
+        <input type="text" id="f-outdoor-flink" placeholder="https://…">
+      </div>
+      <div class="fg">
+        <label class="field-label">Правки</label>
+        <textarea id="f-outdoor-edit-notes" style="min-height:120px" placeholder="Опишите что нужно изменить…"></textarea>
+      </div>
+      <div class="fg">
+        <label class="field-label">Макет с пометками</label>
+        <p class="pres-ref-hint">Загрузите макет и отметьте что нужно изменить</p>
+        <div id="outdoor-edit-mockup-container"></div>
+      </div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Референс стиля</label>
+          <p class="pres-ref-hint">Покажите пример визуала, стиль которого хотите повторить</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:180px">
+              <input type="text" class="outdoor-reflink-input" oninput="outdoorUpdateRefLink(this.value)" placeholder="https://…">
+            </div>
+            <label class="pres-file-btn">
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="outdoorSetRefFile(this)">
+              📎 Загрузить файл
+            </label>
+          </div>
+          <div class="outdoor-ref-file-display" style="margin-top:6px"></div>
+        </div>
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.zip" onchange="outdoorAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="outdoor-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="outdoor-adapt-section" class="hidden">
+      <div class="fg">
+        <label class="field-label">Оригинальный макет</label>
+        <label class="pres-file-btn">
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.psd" onchange="outdoorSetSourceFile(this)">
+          📁 Загрузить макет
+        </label>
+        <div class="outdoor-source-display" style="margin-top:6px"></div>
+      </div>
+      <div class="fg">
+        <label class="field-label">Форматы для адаптации</label>
+        <div style="display:flex;flex-wrap:wrap;gap:5px" id="outdoor-adapt-types"></div>
+      </div>
+      <div id="outdoor-adapt-sizes"></div>
+      <div class="pres-ref-section">
+        <div class="fg">
+          <label class="field-label">Дополнительные материалы</label>
+          <p class="pres-ref-hint">Логотипы, фото, брендбук — всё что нужно дизайнеру</p>
+          <label class="pres-file-btn pres-file-btn-full">
+            <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.zip" onchange="outdoorAddMatFiles(this)">
+            📁 Добавить файлы
+          </label>
+          <div class="outdoor-mat-files-list" style="margin-top:8px;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+      </div>
+    </div>`,
+  print:`
+    <div class="form-row">
+      <div class="fg"><label class="field-label">Формат</label>
+        <select id="f-format"><option>А4</option><option>А3</option><option>А5</option><option>А6</option><option>Другой</option></select></div>
+      <div class="fg"><label class="field-label">Тип</label>
+        <select id="f-ptype"><option>Флаер</option><option>Буклет</option><option>Брошюра</option><option>Визитка</option><option>Плакат</option><option>Другое</option></select></div>
+    </div>
+    <div class="fg"><label class="field-label">Тираж (шт)</label><input type="number" id="f-qty" placeholder="1000"></div>`,
+  brand:`
+    <div class="fg"><label class="field-label">Элементы</label>
+      <div class="check-group" id="cg-brand">
+        ${['Логотип','Цвета','Типографика','Паттерн','Визитки','Бланки','Соцсети','Гайдлайн']
+          .map(v=>`<label class="check-tag" onclick="toggleCheck(this)"><input type="checkbox" value="${v}"> ${v}</label>`).join('')}
+      </div>
+    </div>`,
+  edits:`
+    <div class="fg"><label class="field-label">Ссылка на файл</label><input type="text" id="f-flink" placeholder="https://…"></div>
+    <div class="fg"><label class="field-label">Что изменить</label><textarea id="f-what" placeholder="Опишите правки подробно…"></textarea></div>`,
+  campaign:`
+    <div class="fg"><label class="field-label">Платформы</label>
+      <div class="check-group" id="cg-plat">
+        ${['Instagram','ВКонтакте','YouTube','TikTok','Telegram','Яндекс','Google','Другое']
+          .map(v=>`<label class="check-tag" onclick="toggleCheck(this)"><input type="checkbox" value="${v}"> ${v}</label>`).join('')}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label class="field-label">Форматы</label><input type="text" id="f-formats" placeholder="Баннеры, видео, сторис…"></div>
+      <div class="fg"><label class="field-label">Бюджет (₽)</label><input type="number" id="f-budget" placeholder="50000"></div>
+    </div>`,
+};
+
+// ── STATE ──
+let user = null, selRole = null, selType = null;
+let unsubTasks = null, unsubWorkload = null;
+let filterMode = 'mine';
+let lastTasks = [];
+let draggedId = null;
+let editingTaskId = null;
+let presFiles = [];
+let presScenario = null;
+let presSlides = [];
+let presSlideCounter = 0;
+let presBlockCounter = 0;
+let presAnnotCounter = 0;
+let draggedAnnot = null;
+const presScenarioStates = {};
+let presFullscreen = null;
+let presRefFile = null;
+let presMatFiles = [];
+
+// landing state
+let landingScenario = null;
+let landingSections = [];
+let landingSectionCounter = 0;
+let landingBlockCounter = 0;
+let landingAnnotCounter = 0;
+let landingDraggedAnnot = null;
+let landingFullscreen = null;
+let landingRefFile = null;
+let landingMatFiles = [];
+let landingFiles = [];
+const landingScenarioStates = {};
+const LAND_SECTION_TYPES = ['Главный экран','Описание','Преимущества','Программа/Расписание','Цены','Форма заявки','Призыв к действию','Другое'];
+
+// outdoor state
+let outdoorScenario = null;
+let outdoorBlocks = [];
+let outdoorBlockCounter = 0;
+let outdoorAnnotCounter = 0;
+let outdoorDraggedAnnot = null;
+let outdoorFullscreen = null;
+let outdoorRefFile = null;
+let outdoorMatFiles = [];
+let outdoorSourceFile = null;
+let outdoorEditMockup = {fileDataUrl:null,file:null,annotations:[],annotMode:false};
+let outdoorEditAnnotCounter = 0;
+let outdoorSelectedTypes = [];
+let outdoorAdaptSelectedTypes = [];
+let outdoorAnimation = false;
+const OUTDOOR_MEDIA_TYPES = ['Билборд','Баннер на забор','Сити-лайт','Вывеска','Брандмауэр','Digital-экран','Другое'];
+const OUTDOOR_BLOCK_TAGS = [
+  {id:'headline', label:'Заголовок/УТП',  ph:'Например: Квартиры от 5,9 млн ₽'},
+  {id:'body',     label:'Основной текст', ph:'Например: Звони: +7 (000) 000-00-00'},
+  {id:'logo',     label:'Логотип',        ph:'Описание или инструкции по логотипу…'},
+  {id:'photo',    label:'Фото/Рендер',    ph:'Описание фото или рендера…'},
+  {id:'contacts', label:'Контакты',       ph:'Например: +7 (000) 000-00-00 / сайт.рф'},
+  {id:'qr',       label:'QR-код',         ph:'Ссылка для QR или описание…'},
+];
+
+// ── EXPOSE ──
+window.pickRole     = pickRole;
+window.doLogin      = doLogin;
+window.logout       = logout;
+window.switchTab    = switchTab;
+window.selectType   = selectType;
+window.resetForm    = resetForm;
+window.submitTask   = submitTask;
+window.updateStatus = updateStatus;
+window.toggleCheck  = toggleCheck;
+window.setFilter    = setFilter;
+window.cardDragStart= cardDragStart;
+window.cardDragEnd  = cardDragEnd;
+window.colDragOver  = colDragOver;
+window.colDragLeave = colDragLeave;
+window.colDrop      = colDrop;
+window.openEdit     = openEdit;
+window.closeModal   = closeModal;
+window.saveEdit     = saveEdit;
+window.toggleScard   = toggleScard;
+window.showFileName  = showFileName;
+window.presAddFiles       = presAddFiles;
+window.presRemoveFile     = presRemoveFile;
+window.selectPresScenario = selectPresScenario;
+window.presAddSlide        = presAddSlide;
+window.presRemoveSlide     = presRemoveSlide;
+window.presAddBlock        = presAddBlock;
+window.presRemoveBlock     = presRemoveBlock;
+window.presUpdateBlock     = presUpdateBlock;
+window.presSetBlockTag       = presSetBlockTag;
+window.presToggleSlideStatus = presToggleSlideStatus;
+window.presImageFileChange = presImageFileChange;
+window.presImageRemoveFile = presImageRemoveFile;
+window.presUpdateBlockDesc = presUpdateBlockDesc;
+window.presToggleAnnotMode = presToggleAnnotMode;
+window.presImageClick      = presImageClick;
+window.presUpdateAnnot     = presUpdateAnnot;
+window.presRemoveAnnot     = presRemoveAnnot;
+window.presAnnotDragStart    = presAnnotDragStart;
+window.presAnnotDragOver     = presAnnotDragOver;
+window.presAnnotDrop         = presAnnotDrop;
+window.presUpdateRefLink     = presUpdateRefLink;
+window.presSetRefFile        = presSetRefFile;
+window.presClearRefFile      = presClearRefFile;
+window.presAddMatFiles       = presAddMatFiles;
+window.presRemoveMatFile     = presRemoveMatFile;
+window.presOpenFullscreen    = presOpenFullscreen;
+window.presCloseFullscreen   = presCloseFullscreen;
+window.presFullscreenBgClick = presFullscreenBgClick;
+window.presFullscreenClick   = presFullscreenClick;
+window.selectLandingScenario  = selectLandingScenario;
+window.landingAddSection      = landingAddSection;
+window.landingRemoveSection   = landingRemoveSection;
+window.landingSetSectionType  = landingSetSectionType;
+window.landingAddBlock        = landingAddBlock;
+window.landingRemoveBlock     = landingRemoveBlock;
+window.landingUpdateBlock     = landingUpdateBlock;
+window.landingSetBlockTag     = landingSetBlockTag;
+window.landingUpdateBlockDesc = landingUpdateBlockDesc;
+window.landingImageFileChange = landingImageFileChange;
+window.landingImageRemoveFile = landingImageRemoveFile;
+window.landingToggleAnnotMode = landingToggleAnnotMode;
+window.landingImageClick      = landingImageClick;
+window.landingUpdateAnnot     = landingUpdateAnnot;
+window.landingRemoveAnnot     = landingRemoveAnnot;
+window.landingAnnotDragStart  = landingAnnotDragStart;
+window.landingAnnotDragOver   = landingAnnotDragOver;
+window.landingAnnotDrop       = landingAnnotDrop;
+window.landingUpdateRefLink   = landingUpdateRefLink;
+window.landingSetRefFile      = landingSetRefFile;
+window.landingClearRefFile    = landingClearRefFile;
+window.landingAddMatFiles     = landingAddMatFiles;
+window.landingRemoveMatFile   = landingRemoveMatFile;
+window.landingAddFiles        = landingAddFiles;
+window.landingRemoveFile      = landingRemoveFile;
+window.landingOpenFullscreen  = landingOpenFullscreen;
+window.landingCloseFullscreen = landingCloseFullscreen;
+window.landingFullscreenClick = landingFullscreenClick;
+window.selectOutdoorScenario   = selectOutdoorScenario;
+window.outdoorToggleType       = outdoorToggleType;
+window.outdoorToggleAdaptType  = outdoorToggleAdaptType;
+window.outdoorSetAnimation     = outdoorSetAnimation;
+window.outdoorAddBlock         = outdoorAddBlock;
+window.outdoorRemoveBlock      = outdoorRemoveBlock;
+window.outdoorUpdateBlock      = outdoorUpdateBlock;
+window.outdoorSetBlockTag      = outdoorSetBlockTag;
+window.outdoorUpdateBlockDesc  = outdoorUpdateBlockDesc;
+window.outdoorImageFileChange  = outdoorImageFileChange;
+window.outdoorImageRemoveFile  = outdoorImageRemoveFile;
+window.outdoorToggleAnnotMode  = outdoorToggleAnnotMode;
+window.outdoorImageClick       = outdoorImageClick;
+window.outdoorUpdateAnnot      = outdoorUpdateAnnot;
+window.outdoorRemoveAnnot      = outdoorRemoveAnnot;
+window.outdoorAnnotDragStart   = outdoorAnnotDragStart;
+window.outdoorAnnotDragOver    = outdoorAnnotDragOver;
+window.outdoorAnnotDrop        = outdoorAnnotDrop;
+window.outdoorUpdateRefLink    = outdoorUpdateRefLink;
+window.outdoorSetRefFile       = outdoorSetRefFile;
+window.outdoorClearRefFile     = outdoorClearRefFile;
+window.outdoorAddMatFiles      = outdoorAddMatFiles;
+window.outdoorRemoveMatFile    = outdoorRemoveMatFile;
+window.outdoorSetSourceFile    = outdoorSetSourceFile;
+window.outdoorClearSourceFile  = outdoorClearSourceFile;
+window.outdoorOpenFullscreen          = outdoorOpenFullscreen;
+window.outdoorCloseFullscreen         = outdoorCloseFullscreen;
+window.outdoorFullscreenClick         = outdoorFullscreenClick;
+window.outdoorEditMockupFileChange    = outdoorEditMockupFileChange;
+window.outdoorEditMockupRemove        = outdoorEditMockupRemove;
+window.outdoorEditMockupToggleAnnotMode = outdoorEditMockupToggleAnnotMode;
+window.outdoorEditMockupClick         = outdoorEditMockupClick;
+window.outdoorEditMockupUpdateAnnot   = outdoorEditMockupUpdateAnnot;
+window.outdoorEditMockupRemoveAnnot   = outdoorEditMockupRemoveAnnot;
+window.outdoorEditMockupAnnotDragStart = outdoorEditMockupAnnotDragStart;
+window.outdoorEditMockupAnnotDrop     = outdoorEditMockupAnnotDrop;
+window.outdoorEditMockupOpenFullscreen = outdoorEditMockupOpenFullscreen;
+
+function toggleCheck(lbl){
+  const cb=lbl.querySelector('input');
+  cb.checked=!cb.checked;
+  lbl.classList.toggle('checked',cb.checked);
+}
+
+// ── LOGIN ──
+function pickRole(r){
+  selRole=r;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.toggle('sel',c.dataset.role===r));
+  const box=document.getElementById('login-box');
+  if(r==='designer'){
+    box.innerHTML=`<p style="font-weight:600;color:var(--text-dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Выберите дизайнера</p>
+      <div class="designer-list">
+        ${DESIGNERS.map(d=>`
+          <div class="dp-card" onclick="loginAsDesigner('${d.id}')">
+            <div class="avatar" style="background:${d.color}">${d.name[0]}</div>
+            <div><div class="dp-name">${d.name}</div><div class="dp-role">Дизайнер</div></div>
+          </div>`).join('')}
+      </div>`;
+    window.loginAsDesigner=function(id){
+      const d=DESIGNERS.find(x=>x.id===id);
+      user={name:d.name, role:'designer', color:d.color, id:d.id};
+      localStorage.setItem('df_user',JSON.stringify(user));
+      enterApp();
+    };
+  } else {
+    box.innerHTML=`<div class="fg">
+        <label class="field-label">Ваше имя</label>
+        <input id="ln" type="text" placeholder="Введите имя…" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">Войти →</button>`;
+  }
+}
+
+function doLogin(){
+  const name=document.getElementById('ln')?.value.trim();
+  if(!name){ toast('Введите имя','err'); return; }
+  if(!selRole){ toast('Выберите роль','err'); return; }
+  user={name, role:'client', color:'#1a73e8'};
+  localStorage.setItem('df_user',JSON.stringify(user));
+  enterApp();
+}
+
+async function enterApp(){
+  document.getElementById('login').classList.add('hidden');
+  if(user.role==='designer'){
+    try{
+      await setDoc(doc(db,'designers',user.name),{name:user.name,color:user.color,lastSeen:serverTimestamp()},{merge:true});
+    }catch(e){}
+    showDesigner();
+  } else {
+    showClient();
+  }
+}
+
+function showClient(){
+  document.getElementById('client').classList.remove('hidden');
+  document.getElementById('c-av').textContent=user.name[0].toUpperCase();
+  document.getElementById('c-av').style.background=user.color||'var(--accent)';
+  document.getElementById('c-nm').textContent=user.name;
+  buildTypeGrid();
+  buildAssigneeSelect();
+}
+
+function showDesigner(){
+  document.getElementById('designer').classList.remove('hidden');
+  const d=DESIGNERS.find(x=>x.name===user.name)||{color:'#1a73e8'};
+  document.getElementById('d-av').textContent=user.name[0].toUpperCase();
+  document.getElementById('d-av').style.background=d.color;
+  document.getElementById('d-nm').textContent=user.name;
+  subscribeKanban();
+}
+
+function logout(){
+  if(unsubTasks){unsubTasks();unsubTasks=null;}
+  if(unsubWorkload){unsubWorkload();unsubWorkload=null;}
+  localStorage.removeItem('df_user');
+  user=null; selRole=null; selType=null; filterMode='mine'; lastTasks=[];
+  document.getElementById('client').classList.add('hidden');
+  document.getElementById('designer').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('login-box').innerHTML='<p class="login-hint">Выберите роль выше</p>';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='create'));
+  document.getElementById('tab-create').classList.remove('hidden');
+  document.getElementById('tab-workload').classList.add('hidden');
+}
+
+// ── TABS ──
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.getElementById('tab-create').classList.toggle('hidden',tab!=='create');
+  document.getElementById('tab-workload').classList.toggle('hidden',tab!=='workload');
+  if(tab==='workload') loadWorkload();
+}
+
+// ── TYPE GRID ──
+function buildTypeGrid(){
+  document.getElementById('type-grid').innerHTML=TYPES.map(t=>
+    `<div class="type-card" data-type="${t.id}" onclick="selectType('${t.id}')">
+       <span class="type-emoji">${t.e}</span>
+       <span class="type-name">${t.n}</span>
+     </div>`
+  ).join('');
+}
+
+function buildAssigneeSelect(){
+  const sel=document.getElementById('f-assignee');
+  sel.innerHTML='<option value="">— Выберите дизайнера —</option>'+
+    DESIGNERS.map(d=>`<option value="${d.name}">${d.name}</option>`).join('');
+}
+
+function selectType(id){
+  selType=id;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('sel',c.dataset.type===id));
+  const t=TYPES.find(x=>x.id===id);
+  document.getElementById('form-heading').innerHTML=`${t.e} ${t.n}`;
+  document.getElementById('dyn-fields').innerHTML=TYPE_FIELDS[id]||'';
+  // for 'post' type the title is inside dyn-fields — hide the standalone one
+  document.getElementById('f-title').parentElement.style.display = id==='post' ? 'none' : '';
+  document.getElementById('f-refs').parentElement.style.display = (id==='pres'||id==='landing'||id==='outdoor') ? 'none' : '';
+  document.getElementById('task-form').classList.remove('hidden');
+  document.getElementById('task-form').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function resetForm(){
+  selType=null;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('task-form').classList.add('hidden');
+  ['f-title','f-deadline','f-desc','f-refs'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('f-priority').value='normal';
+  document.getElementById('f-assignee').value='';
+  presCloseFullscreen();
+  presFiles=[];
+  presRefFile=null; presMatFiles=[];
+  presScenario=null; presSlides=[]; presSlideCounter=0; presBlockCounter=0; presAnnotCounter=0;
+  for(const k in presScenarioStates) delete presScenarioStates[k];
+  landingScenario=null; landingSections=[]; landingSectionCounter=0; landingBlockCounter=0; landingAnnotCounter=0;
+  for(const k in landingScenarioStates) delete landingScenarioStates[k];
+  landingFiles=[]; landingRefFile=null; landingMatFiles=[];
+  if(landingFullscreen) landingCloseFullscreen();
+  outdoorScenario=null; outdoorBlocks=[]; outdoorBlockCounter=0; outdoorAnnotCounter=0;
+  outdoorSelectedTypes=[]; outdoorAdaptSelectedTypes=[]; outdoorAnimation=false;
+  outdoorRefFile=null; outdoorMatFiles=[]; outdoorSourceFile=null;
+  outdoorEditMockup={fileDataUrl:null,file:null,annotations:[],annotMode:false};
+  outdoorEditAnnotCounter=0;
+  if(outdoorFullscreen) outdoorCloseFullscreen();
+  document.getElementById('dyn-fields').innerHTML='';
+  document.getElementById('f-title').parentElement.style.display='';
+  document.getElementById('f-refs').parentElement.style.display='';
+}
+
+// ── SUBMIT TASK ──
+async function submitTask(){
+  const titleEl=document.getElementById('f-title-post')||document.getElementById('f-title');
+  const title=titleEl?.value.trim()||'';
+  if(!title){toast('Введите название задачи','err');return;}
+  if(!selType){toast('Выберите тип задачи','err');return;}
+  const assignee=document.getElementById('f-assignee').value;
+  if(!assignee){toast('Выберите дизайнера','err');return;}
+
+  const extra={};
+  document.querySelectorAll('#dyn-fields input,#dyn-fields select,#dyn-fields textarea').forEach(el=>{
+    if(el.type==='checkbox'){
+      const gid=el.closest('.check-group')?.id||'checks';
+      if(!extra[gid])extra[gid]=[];
+      if(el.checked)extra[gid].push(el.value);
+    } else if(el.type==='file'){
+      // skip — handled separately
+    } else if(el.id){
+      extra[el.id.replace('f-','')]=el.value;
+    }
+  });
+  if(selType==='pres'&&presFiles.length) extra.presFileNames=presFiles.map(f=>f.name);
+  if(selType==='pres'){
+    const rl=document.querySelector('#pres-new-section:not(.hidden) .pres-reflink-input')||document.querySelector('#pres-edit-section:not(.hidden) .pres-reflink-input')||document.querySelector('#pres-adapt-section:not(.hidden) .pres-reflink-input');
+    if(rl&&rl.value.trim()) extra['pres-reflink']=rl.value.trim();
+  }
+  if(selType==='pres'&&presRefFile) extra['pres-reffile']=presRefFile.name;
+  if(selType==='pres'&&presMatFiles.length) extra['pres-matfiles']=presMatFiles.map(f=>f.name);
+  if(selType==='pres'){
+    const allStates={...presScenarioStates};
+    if(presScenario) allStates[presScenario]={slides:presSlides};
+    ['new','edits','adapt'].forEach(sc=>{
+      const st=allStates[sc];
+      if(st?.slides?.length) extra['pres-slides-'+sc]=JSON.stringify(st.slides.map(s=>({
+        status:s.status,
+        blocks:s.blocks.map(b=>b.type==='image'
+          ?{type:'image',description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+          :{type:'text',content:b.content})
+      })));
+    });
+  }
+  if(selType==='landing'){
+    const allLS={...landingScenarioStates};
+    if(landingScenario) allLS[landingScenario]={sections:landingSections};
+    ['new','edits','adapt'].forEach(sc=>{
+      const st=allLS[sc];
+      if(st?.sections?.length) extra['landing-sections-'+sc]=JSON.stringify(st.sections.map(s=>({
+        type:s.type,
+        blocks:s.blocks.map(b=>b.type==='image'
+          ?{type:'image',description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+          :{type:'text',content:b.content})
+      })));
+    });
+    const lr=document.querySelector('#landing-edit-section:not(.hidden) .land-reflink-input')||document.querySelector('#landing-adapt-section:not(.hidden) .land-reflink-input');
+    if(lr&&lr.value.trim()) extra['landing-reflink']=lr.value.trim();
+    if(landingRefFile) extra['landing-reffile']=landingRefFile.name;
+    if(landingMatFiles.length) extra['landing-matfiles']=landingMatFiles.map(f=>f.name);
+    if(landingFiles.length) extra['landing-files']=landingFiles.map(f=>f.name);
+  }
+  if(selType==='outdoor'){
+    extra['outdoor-scenario']=outdoorScenario||'';
+    if(outdoorSelectedTypes.length) extra['outdoor-types']=outdoorSelectedTypes.join(',');
+    if(outdoorAnimation) extra['outdoor-anim-desc']=document.getElementById('f-anim-desc')?.value||'';
+    if(outdoorBlocks.length) extra['outdoor-blocks']=JSON.stringify(outdoorBlocks.map(b=>
+      b.type==='image'
+        ?{type:'image',tag:b.tag,description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+        :{type:'text',tag:b.tag,content:b.content}
+    ));
+    const or=document.querySelector('#outdoor-new-section:not(.hidden) .outdoor-reflink-input')||document.querySelector('#outdoor-edit-section:not(.hidden) .outdoor-reflink-input');
+    if(or&&or.value.trim()) extra['outdoor-reflink']=or.value.trim();
+    if(outdoorRefFile) extra['outdoor-reffile']=outdoorRefFile.name;
+    if(outdoorMatFiles.length) extra['outdoor-matfiles']=outdoorMatFiles.map(f=>f.name);
+    if(outdoorSourceFile) extra['outdoor-source']=outdoorSourceFile.name;
+    if(outdoorAdaptSelectedTypes.length){
+      extra['outdoor-adapt-types']=outdoorAdaptSelectedTypes.join(',');
+      const sizes={};
+      outdoorAdaptSelectedTypes.forEach(t=>{
+        const k=t.replace(/[^a-zA-Zа-яёА-ЯЁ0-9]/g,'');
+        const w=document.getElementById('f-adw-'+k)?.value;
+        const h=document.getElementById('f-adh-'+k)?.value;
+        if(w||h) sizes[t]={w,h};
+      });
+      if(Object.keys(sizes).length) extra['outdoor-adapt-sizes']=JSON.stringify(sizes);
+    }
+  }
+
+  try{
+    await addDoc(collection(db,'tasks'),{
+      type:selType,
+      typeName:TYPES.find(t=>t.id===selType).n,
+      typeEmoji:TYPES.find(t=>t.id===selType).e,
+      title,
+      clientName:user.name,
+      assignedTo:assignee,
+      status:'new',
+      priority:document.getElementById('f-priority').value,
+      deadline:document.getElementById('f-deadline').value||null,
+      description:document.getElementById('f-desc').value.trim(),
+      references:document.getElementById('f-refs').value.trim(),
+      extra,
+      createdAt:serverTimestamp()
+    });
+    toast('Задача создана!','ok');
+    resetForm();
+  }catch(e){
+    toast('Ошибка: '+e.message,'err');
+  }
+}
+
+// ── WORKLOAD ──
+function loadWorkload(){
+  if(unsubWorkload)return;
+  const container=document.getElementById('wl-list');
+  container.innerHTML='<div class="loading"><div class="spinner"></div>Загрузка…</div>';
+  const q=query(collection(db,'tasks'),orderBy('createdAt','desc'));
+  unsubWorkload=onSnapshot(q,snap=>{
+    const tasks=[];
+    snap.forEach(d=>tasks.push({id:d.id,...d.data()}));
+    renderWorkload(tasks,container);
+  });
+}
+
+function renderWorkload(tasks,container){
+  const active=tasks.filter(t=>t.status!=='done');
+  const byD={};
+  DESIGNERS.forEach(d=>{byD[d.name]=[];});
+  byD['__none__']=[];
+  active.forEach(t=>{
+    const k=t.assignedTo&&byD[t.assignedTo]!==undefined?t.assignedTo:'__none__';
+    if(!byD[k])byD[k]=[];
+    byD[k].push(t);
+  });
+
+  let html='';
+  DESIGNERS.forEach(d=>{html+=wlBlock(d,byD[d.name]||[]);});
+  const none=byD['__none__']||[];
+  if(none.length)html+=wlBlock({name:'Без исполнителя',color:'#9aa0a6'},none);
+  container.innerHTML=html||'<div class="empty"><div class="empty-icon">🎉</div><p>Нет активных задач</p></div>';
+}
+
+function wlBlock(d,tasks){
+  const av=d.name[0].toUpperCase();
+  return `<div class="wl-card">
+    <div class="wl-header">
+      <div class="wl-name">
+        <div class="avatar" style="background:${d.color}">${av}</div>${esc(d.name)}
+      </div>
+      <span class="task-cnt">${tasks.length} задач</span>
+    </div>
+    <div class="wl-body">
+      ${tasks.length===0
+        ?'<div class="mini-empty">✅ Свободен</div>'
+        :tasks.map(t=>`<div class="mini-card">
+          <div class="mini-info">
+            <div class="mini-title">${esc(t.title)}</div>
+            <div class="mini-meta">
+              <span>${t.typeEmoji||''} ${esc(t.typeName||'')}</span>
+              ${t.deadline?`<span>📅 ${fmtDl(t.deadline)}</span>`:''}
+              ${t.priority==='urgent'?'<span class="p-urgent">СРОЧНО</span>':t.priority==='high'?'<span class="p-high">ВЫСОКИЙ</span>':''}
+            </div>
+          </div>
+          <span class="sbadge s-${t.status}">${slabel(t.status)}</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── KANBAN ──
+function setFilter(f){
+  filterMode=f;
+  document.querySelectorAll('.ftog').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
+  renderKanban(lastTasks);
+}
+
+function subscribeKanban(){
+  const q=query(collection(db,'tasks'),orderBy('createdAt','desc'));
+  unsubTasks=onSnapshot(q,snap=>{
+    lastTasks=[];
+    snap.forEach(d=>lastTasks.push({id:d.id,...d.data()}));
+    renderKanban(lastTasks);
+  });
+}
+
+function renderKanban(allTasks){
+  const tasks=filterMode==='mine'
+    ?allTasks.filter(t=>t.assignedTo===user.name||(!t.assignedTo&&t.status==='new'))
+    :allTasks;
+
+  const cols={new:[],progress:[],review:[],done:[]};
+  tasks.forEach(t=>{if(cols[t.status])cols[t.status].push(t);else cols.new.push(t);});
+  ['new','progress','review','done'].forEach(s=>{
+    document.getElementById('col-'+s).innerHTML=
+      cols[s].length?cols[s].map(taskCard).join(''):emptyCol();
+    document.getElementById('cnt-'+s).textContent=cols[s].length;
+  });
+}
+
+function emptyCol(){
+  return '<div class="empty"><div class="empty-icon">📭</div><p>Нет задач</p></div>';
+}
+
+function taskCard(t){
+  const dlClass=t.deadline?getDlClass(t.deadline):'';
+  const dlTxt=t.deadline?fmtDl(t.deadline):'Без дедлайна';
+  const chips=buildChips(t.extra||{});
+  const ptag=t.priority==='urgent'?'<span class="p-urgent">СРОЧНО</span>':
+             t.priority==='high'?'<span class="p-high">ВЫСОКИЙ</span>':'';
+  return `<div class="tcard" draggable="true" data-id="${t.id}" data-p="${t.priority||'normal'}"
+    ondragstart="cardDragStart(event,'${t.id}')" ondragend="cardDragEnd(event)">
+    <div class="tcard-type">${t.typeEmoji||'📋'} ${esc(t.typeName||'')} ${ptag}</div>
+    <div class="tcard-title">${esc(t.title)}</div>
+    <div class="tcard-client">👤 ${esc(t.clientName||'—')}</div>
+    ${chips?`<div class="tcard-extra">${chips}</div>`:''}
+    ${t.description?`<div class="tcard-desc">${esc(t.description)}</div>`:''}
+    <div class="tcard-foot">
+      <div class="deadline ${dlClass}">📅 ${dlTxt}</div>
+      <button class="edit-btn" onclick="openEdit(event,'${t.id}')" title="Редактировать">⋯</button>
+    </div>
+  </div>`;
+}
+
+function buildChips(ex){
+  const p=[];
+  if(ex.platform)p.push('📍'+ex.platform);
+  if(ex.orient)p.push('🔄'+ex.orient);
+  if(ex.dur)p.push('⏱'+ex.dur+'с');
+  if(ex.posts)p.push('📄'+ex.posts+' поста');
+  if(ex.stories&&ex.stories!=='0')p.push('📖'+ex.stories+' сторис');
+  if(ex.slides)p.push('📑'+ex.slides+' слайдов');
+  if(ex.sections)p.push('🗂'+ex.sections+' секций');
+  if(ex.format)p.push('📐'+ex.format);
+  if(ex.size)p.push('📏'+ex.size);
+  if(ex.qty)p.push('🔢'+ex.qty+' шт');
+  if(ex.budget)p.push('💰'+Number(ex.budget).toLocaleString('ru')+'₽');
+  if(ex['cg-brand']?.length)p.push('🎨'+ex['cg-brand'].join(', '));
+  if(ex['cg-plat']?.length)p.push('📡'+ex['cg-plat'].join(', '));
+  if(ex.flink)p.push(`<a href="${esc(ex.flink)}" target="_blank" style="color:var(--accent)">🔗 Файл</a>`);
+  return p.map(x=>`<span class="tcard-chip">${x}</span>`).join('');
+}
+
+// ── STATUS UPDATE ──
+async function updateStatus(id,status){
+  try{
+    const up={status};
+    if(!lastTasks.find(t=>t.id===id)?.assignedTo) up.assignedTo=user.name;
+    await updateDoc(doc(db,'tasks',id),up);
+  }catch(e){
+    toast('Ошибка обновления','err');
+  }
+}
+
+// ── DRAG & DROP ──
+function cardDragStart(e,id){
+  draggedId=id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',id);
+}
+
+function cardDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('drag-over'));
+}
+
+function colDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  e.currentTarget.closest('.kcol').classList.add('drag-over');
+}
+
+function colDragLeave(e){
+  if(!e.currentTarget.contains(e.relatedTarget)){
+    e.currentTarget.closest('.kcol').classList.remove('drag-over');
+  }
+}
+
+async function colDrop(e,status){
+  e.preventDefault();
+  e.currentTarget.closest('.kcol').classList.remove('drag-over');
+  if(draggedId){
+    await updateStatus(draggedId,status);
+    draggedId=null;
+  }
+}
+
+// ── EDIT MODAL ──
+function openEdit(e,id){
+  e.stopPropagation();
+  editingTaskId=id;
+  const t=lastTasks.find(x=>x.id===id);
+  if(!t)return;
+  document.getElementById('em-title').value=t.title||'';
+  document.getElementById('em-deadline').value=t.deadline||'';
+  document.getElementById('em-priority').value=t.priority||'normal';
+  document.getElementById('em-desc').value=t.description||'';
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('edit-modal'))return;
+  document.getElementById('edit-modal').classList.add('hidden');
+  editingTaskId=null;
+}
+
+async function saveEdit(){
+  if(!editingTaskId)return;
+  const title=document.getElementById('em-title').value.trim();
+  if(!title){toast('Название не может быть пустым','err');return;}
+  try{
+    await updateDoc(doc(db,'tasks',editingTaskId),{
+      title,
+      deadline:document.getElementById('em-deadline').value||null,
+      priority:document.getElementById('em-priority').value,
+      description:document.getElementById('em-desc').value.trim(),
+    });
+    document.getElementById('edit-modal').classList.add('hidden');
+    editingTaskId=null;
+    toast('Сохранено','ok');
+  }catch(e){
+    toast('Ошибка сохранения','err');
+  }
+}
+
+// ── CARD ACCORDION ──
+function toggleScard(head){
+  head.classList.toggle('open');
+  head.nextElementSibling.classList.toggle('open');
+}
+
+function showFileName(input){
+  const name=input.files[0]?.name||'';
+  input.closest('.file-btn').querySelector('.file-fname').textContent=name?'✓ '+name:'';
+}
+
+function presAddFiles(input){
+  Array.from(input.files).forEach(f=>presFiles.push(f));
+  input.value='';
+  renderPresFiles();
+}
+
+function presRemoveFile(i){
+  presFiles.splice(i,1);
+  renderPresFiles();
+}
+
+function renderPresFiles(){
+  const list=document.getElementById('f-pres-files-list');
+  if(!list)return;
+  list.innerHTML=presFiles.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:12px">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(f.name)}</span>
+      <button type="button" onclick="presRemoveFile(${i})" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px" title="Удалить">✕</button>
+    </div>`).join('');
+}
+
+// ── PRES REFERENCE + MATERIALS ──
+function presUpdateRefLink(val){
+  document.querySelectorAll('.pres-reflink-input').forEach(el=>{if(el.value!==val)el.value=val;});
+}
+
+function presSetRefFile(input){
+  presRefFile=input.files[0]||null;
+  input.value='';
+  renderPresRefFile();
+}
+
+function presClearRefFile(){
+  presRefFile=null;
+  renderPresRefFile();
+}
+
+function renderPresRefFile(){
+  const html=presRefFile?`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(presRefFile.name)}</span>
+    <button type="button" onclick="presClearRefFile()" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px" title="Удалить">✕</button>
+  </div>`:'';
+  document.querySelectorAll('.pres-ref-file-display').forEach(el=>el.innerHTML=html);
+}
+
+function presAddMatFiles(input){
+  Array.from(input.files).forEach(f=>presMatFiles.push(f));
+  input.value='';
+  renderPresMatFiles();
+}
+
+function presRemoveMatFile(i){
+  presMatFiles.splice(i,1);
+  renderPresMatFiles();
+}
+
+function renderPresMatFiles(){
+  const html=presMatFiles.map((f,i)=>`
+    <div class="pres-file-row">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(f.name)}</span>
+      <button type="button" onclick="presRemoveMatFile(${i})" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px" title="Удалить">✕</button>
+    </div>`).join('');
+  document.querySelectorAll('.pres-mat-files-list').forEach(el=>el.innerHTML=html);
+}
+
+// ── PRES SCENARIO + SLIDE EDITOR ──
+function selectPresScenario(scenario){
+  if(presScenario&&presScenario!==scenario)
+    presScenarioStates[presScenario]={slides:presSlides,slideCounter:presSlideCounter,blockCounter:presBlockCounter,annotCounter:presAnnotCounter};
+  presScenario=scenario;
+  const saved=presScenarioStates[scenario];
+  if(saved){presSlides=saved.slides;presSlideCounter=saved.slideCounter;presBlockCounter=saved.blockCounter;presAnnotCounter=saved.annotCounter;}
+  else{presSlides=[];presSlideCounter=0;presBlockCounter=0;presAnnotCounter=0;}
+  document.querySelectorAll('.pres-scen-btn').forEach(b=>b.classList.toggle('sel',b.dataset.scenario===scenario));
+  document.getElementById('pres-new-section').classList.toggle('hidden',scenario!=='new');
+  document.getElementById('pres-edit-section').classList.toggle('hidden',scenario!=='edits');
+  document.getElementById('pres-adapt-section').classList.toggle('hidden',scenario!=='adapt');
+  document.getElementById('f-pres-scenario').value=scenario;
+  if(presSlides.length===0) presAddSlide();
+  else renderPresEditor();
+}
+
+function presAddSlide(afterId=null){
+  presSlideCounter++;
+  const slide={id:'s'+presSlideCounter,status:'ready',blocks:[]};
+  if(afterId!==null){
+    const idx=presSlides.findIndex(s=>s.id===afterId);
+    presSlides.splice(idx+1,0,slide);
+  } else {
+    presSlides.push(slide);
+  }
+  renderPresEditor();
+}
+
+function presRemoveSlide(id){
+  if(presSlides.length<=1)return;
+  presSlides=presSlides.filter(s=>s.id!==id);
+  renderPresEditor();
+}
+
+function presAddBlock(slideId,type){
+  presBlockCounter++;
+  const slide=presSlides.find(s=>s.id===slideId);
+  if(!slide)return;
+  const block=type==='image'
+    ?{id:'b'+presBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false}
+    :{id:'b'+presBlockCounter,type:'text',content:'',tag:null};
+  slide.blocks.push(block);
+  renderPresEditor();
+}
+
+function presRemoveBlock(slideId,blockId){
+  const slide=presSlides.find(s=>s.id===slideId);
+  if(!slide)return;
+  slide.blocks=slide.blocks.filter(b=>b.id!==blockId);
+  renderPresEditor();
+}
+
+function presUpdateBlock(slideId,blockId,content){
+  const slide=presSlides.find(s=>s.id===slideId);
+  if(!slide)return;
+  const block=slide.blocks.find(b=>b.id===blockId);
+  if(block)block.content=content;
+}
+
+function renderPresBlock(slide,block){
+  const sid=slide.id,bid=block.id;
+  if(block.type==='text'){
+    const ph=PRES_TAGS.find(t=>t.id===block.tag)?.ph||'Введите текст или выберите тип…';
+    const tagBtns=PRES_TAGS.map(t=>
+      `<button type="button" class="pres-tag-btn${block.tag===t.id?' active':''}" onclick="presSetBlockTag('${sid}','${bid}','${t.id}')">${t.label}</button>`
+    ).join('');
+    return `<div class="pres-block">
+      <span class="pres-block-icon">📝</span>
+      <div style="flex:1;min-width:0">
+        <div class="pres-block-content" contenteditable="true"
+          data-placeholder="${esc(ph)}"
+          onblur="presUpdateBlock('${sid}','${bid}',this.textContent)">${esc(block.content)}</div>
+        <div class="pres-tag-row">${tagBtns}</div>
+      </div>
+      <button type="button" class="pres-block-del" onclick="presRemoveBlock('${sid}','${bid}')" title="Удалить блок">✕</button>
+    </div>`;
+  }
+  // ── image block ──
+  let imgInner;
+  if(block.fileDataUrl){
+    const stickers=block.annotations.map(a=>`
+      <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+        draggable="true"
+        ondragstart="presAnnotDragStart(event,'${sid}','${bid}','${a.id}')">
+        <div class="pres-annot-body">
+          <div class="pres-annot-text" contenteditable="true"
+            onblur="presUpdateAnnot('${sid}','${bid}','${a.id}',this.textContent)">${esc(a.text)}</div>
+          <button type="button" class="pres-annot-del" onclick="event.stopPropagation();presRemoveAnnot('${sid}','${bid}','${a.id}')">✕</button>
+        </div>
+        <div class="pres-annot-arrow"></div>
+      </div>`).join('');
+    const clickzone=block.annotMode
+      ?`<div class="pres-img-clickzone" onclick="presImageClick(event,'${sid}','${bid}')"></div>`:'';
+    const annotBtn=block.annotMode
+      ?`<button type="button" class="pres-annot-mode-btn active" onclick="presToggleAnnotMode('${sid}','${bid}')">✓ Готово</button>`
+      :`<button type="button" class="pres-annot-mode-btn" onclick="presToggleAnnotMode('${sid}','${bid}')">📍 Добавить пометку</button>`;
+    imgInner=`
+      <div class="pres-img-preview-wrap"
+        ondragover="presAnnotDragOver(event)"
+        ondrop="presAnnotDrop(event,'${sid}','${bid}')">
+        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <button type="button" class="pres-img-expand-btn" onclick="presOpenFullscreen('${sid}','${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
+        <div class="pres-img-stickers">${stickers}</div>
+        ${clickzone}
+      </div>
+      <div class="pres-img-controls">
+        ${annotBtn}
+        <button type="button" class="btn-ghost btn-sm" style="font-size:11px;padding:3px 9px"
+          onclick="presImageRemoveFile('${sid}','${bid}')">✕ Удалить фото</button>
+      </div>`;
+  } else {
+    imgInner=`<label class="pres-img-upload">
+      <input type="file" accept=".jpg,.jpeg,.png" onchange="presImageFileChange('${sid}','${bid}',this)">
+      📁 Загрузить файл
+    </label>`;
+  }
+  return `<div class="pres-block pres-block-img">
+    <div style="display:flex;gap:7px;align-items:flex-start;width:100%">
+      <span class="pres-block-icon">🖼️</span>
+      <div style="flex:1;min-width:0">
+        <input type="text" class="pres-img-desc"
+          placeholder="Описание изображения, например: Рендер фасада…"
+          value="${esc(block.description)}"
+          onchange="presUpdateBlockDesc('${sid}','${bid}',this.value)">
+        ${imgInner}
+      </div>
+      <button type="button" class="pres-block-del" onclick="presRemoveBlock('${sid}','${bid}')" title="Удалить блок">✕</button>
+    </div>
+  </div>`;
+}
+
+function getPresEditorEl(){
+  if(presScenario==='edits') return document.getElementById('pres-editor-edit');
+  if(presScenario==='adapt') return document.getElementById('pres-editor-adapt');
+  return document.getElementById('pres-editor');
+}
+
+function renderPresEditor(){
+  const editor=getPresEditorEl();
+  if(!editor)return;
+  editor.innerHTML=presSlides.map((slide,idx)=>{
+    const statusCls=slide.status==='discuss'?'pres-status-discuss':'pres-status-ready';
+    const statusLabel=slide.status==='discuss'?'💬 Нужно обсудить':'✅ Готово к работе';
+    return `<div class="pres-slide-wrap">
+      <div class="pres-slide-header">
+        <span>Слайд ${idx+1}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="pres-status-btn ${statusCls}" onclick="presToggleSlideStatus('${slide.id}')">${statusLabel}</button>
+          ${presSlides.length>1?`<button type="button" class="btn-ghost btn-sm" style="padding:3px 10px;font-size:11px;color:var(--review);border-color:rgba(217,48,37,.3)" onclick="presRemoveSlide('${slide.id}')">Удалить</button>`:''}
+        </div>
+      </div>
+      <div class="pres-canvas">
+        ${slide.blocks.length===0?'<div class="pres-canvas-empty">Добавьте блоки с помощью кнопок ниже</div>':''}
+        ${slide.blocks.map(block=>renderPresBlock(slide,block)).join('')}
+      </div>
+      <div class="pres-slide-actions">
+        <button type="button" class="btn-ghost btn-sm" onclick="presAddBlock('${slide.id}','text')">+ Текст</button>
+        <button type="button" class="btn-ghost btn-sm" onclick="presAddBlock('${slide.id}','image')">🖼 Изображение</button>
+      </div>
+      <button type="button" class="pres-add-after" onclick="presAddSlide('${slide.id}')">+ Добавить слайд</button>
+    </div>`;
+  }).join('');
+}
+
+// ── PRES IMAGE + ANNOTATIONS ──
+function presSetBlockTag(slideId,blockId,tag){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.tag=block.tag===tag?null:tag;
+  renderPresEditor();
+}
+
+function presToggleSlideStatus(slideId){
+  const slide=presSlides.find(s=>s.id===slideId);
+  if(!slide)return;
+  slide.status=slide.status==='ready'?'discuss':'ready';
+  renderPresEditor();
+}
+
+function presImageFileChange(slideId,blockId,input){
+  const file=input.files[0];
+  if(!file)return;
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.file=file;
+  const reader=new FileReader();
+  reader.onload=e=>{block.fileDataUrl=e.target.result;renderPresEditor();};
+  reader.readAsDataURL(file);
+}
+
+function presImageRemoveFile(slideId,blockId){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.file=null;block.fileDataUrl=null;block.annotations=[];block.annotMode=false;
+  if(presFullscreen&&presFullscreen.slideId===slideId&&presFullscreen.blockId===blockId) presCloseFullscreen();
+  renderPresEditor();
+}
+
+function presUpdateBlockDesc(slideId,blockId,text){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(block)block.description=text;
+}
+
+function presToggleAnnotMode(slideId,blockId){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.annotMode=!block.annotMode;
+  renderPresEditor();
+}
+
+function presImageClick(e,slideId,blockId){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block||!block.annotMode)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  presAnnotCounter++;
+  block.annotations.push({id:'a'+presAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderPresEditor();
+  refreshPresFullscreen();
+}
+
+function presUpdateAnnot(slideId,blockId,annotId,text){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  const a=block.annotations.find(a=>a.id===annotId);
+  if(a)a.text=text;
+}
+
+function presRemoveAnnot(slideId,blockId,annotId){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.annotations=block.annotations.filter(a=>a.id!==annotId);
+  renderPresEditor();
+  refreshPresFullscreen();
+}
+
+function presAnnotDragStart(e,slideId,blockId,annotId){
+  draggedAnnot={slideId,blockId,annotId,offsetX:e.offsetX||0,offsetY:e.offsetY||0};
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',annotId);
+}
+
+function presAnnotDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+}
+
+function presAnnotDrop(e,slideId,blockId){
+  e.preventDefault();
+  if(!draggedAnnot)return;
+  const block=presSlides.find(s=>s.id===draggedAnnot.slideId)?.blocks.find(b=>b.id===draggedAnnot.blockId);
+  if(!block)return;
+  const a=block.annotations.find(a=>a.id===draggedAnnot.annotId);
+  if(!a)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  a.x=Math.max(0,Math.min(82,((e.clientX-rect.left-draggedAnnot.offsetX)/rect.width)*100));
+  a.y=Math.max(0,Math.min(75,((e.clientY-rect.top-draggedAnnot.offsetY)/rect.height)*100));
+  draggedAnnot=null;
+  renderPresEditor();
+  refreshPresFullscreen();
+}
+
+// ── PRES FULLSCREEN ──
+function presOpenFullscreen(slideId,blockId){
+  presFullscreen={slideId,blockId};
+  refreshPresFullscreen();
+  document.getElementById('pres-fullscreen-modal').classList.remove('hidden');
+}
+
+function presCloseFullscreen(){
+  presFullscreen=null;
+  const modal=document.getElementById('pres-fullscreen-modal');
+  if(modal)modal.classList.add('hidden');
+}
+
+function presFullscreenBgClick(e){
+  if(e.target!==document.getElementById('pres-fullscreen-modal'))return;
+  if(presFullscreen) presCloseFullscreen();
+  else if(landingFullscreen) landingCloseFullscreen();
+  else if(outdoorFullscreen) outdoorCloseFullscreen();
+}
+
+function presFullscreenClick(e,slideId,blockId){
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  presAnnotCounter++;
+  block.annotations.push({id:'a'+presAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderPresEditor();
+  refreshPresFullscreen();
+}
+
+function refreshPresFullscreen(){
+  if(!presFullscreen)return;
+  const {slideId,blockId}=presFullscreen;
+  const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
+  if(!block||!block.fileDataUrl){presCloseFullscreen();return;}
+  const inner=document.getElementById('pres-fullscreen-inner');
+  if(!inner)return;
+  const stickers=block.annotations.map(a=>`
+    <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+      draggable="true"
+      ondragstart="presAnnotDragStart(event,'${slideId}','${blockId}','${a.id}')">
+      <div class="pres-annot-body">
+        <div class="pres-annot-text" contenteditable="true"
+          onblur="presUpdateAnnot('${slideId}','${blockId}','${a.id}',this.textContent)">${esc(a.text)}</div>
+        <button type="button" class="pres-annot-del" onclick="event.stopPropagation();presRemoveAnnot('${slideId}','${blockId}','${a.id}')">✕</button>
+      </div>
+      <div class="pres-annot-arrow"></div>
+    </div>`).join('');
+  inner.innerHTML=`
+    <img src="${block.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <div class="pres-fullscreen-stickers"
+      ondragover="presAnnotDragOver(event)"
+      ondrop="presAnnotDrop(event,'${slideId}','${blockId}')">
+      ${stickers}
+    </div>
+    <div class="pres-fullscreen-clickzone"
+      onclick="presFullscreenClick(event,'${slideId}','${blockId}')"></div>`;
+}
+
+// ── HELPERS ──
+function slabel(s){return{new:'Новое',progress:'В работе',review:'На правках',done:'Готово'}[s]||s}
+
+function fmtDl(ds){
+  const d=new Date(ds+'T00:00:00'),now=new Date();
+  now.setHours(0,0,0,0);
+  const diff=Math.round((d-now)/864e5);
+  if(diff<0)return`Просрочено (${d.toLocaleDateString('ru',{day:'numeric',month:'short'})})`;
+  if(diff===0)return'Сегодня!';
+  if(diff===1)return'Завтра';
+  if(diff<=3)return`Через ${diff} дня`;
+  return d.toLocaleDateString('ru',{day:'numeric',month:'short'});
+}
+
+function getDlClass(ds){
+  const d=new Date(ds+'T00:00:00'),now=new Date();
+  now.setHours(0,0,0,0);
+  const diff=Math.round((d-now)/864e5);
+  if(diff<0)return'ov';
+  if(diff<=2)return'soon';
+  return'';
+}
+
+function esc(s){
+  if(!s)return'';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg,type='ok'){
+  const c=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${type==='ok'?'✓':'✕'}</span> ${msg}`;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+// ── LANDING EDITOR ──
+function getLandingEditorEl(){
+  if(landingScenario==='edits') return document.getElementById('landing-editor-edit');
+  if(landingScenario==='adapt') return document.getElementById('landing-editor-adapt');
+  return document.getElementById('landing-editor-new');
+}
+
+function selectLandingScenario(scenario){
+  if(landingScenario&&landingScenario!==scenario)
+    landingScenarioStates[landingScenario]={sections:landingSections,sectionCounter:landingSectionCounter,blockCounter:landingBlockCounter,annotCounter:landingAnnotCounter};
+  landingScenario=scenario;
+  const saved=landingScenarioStates[scenario];
+  if(saved){landingSections=saved.sections;landingSectionCounter=saved.sectionCounter;landingBlockCounter=saved.blockCounter;landingAnnotCounter=saved.annotCounter;}
+  else{landingSections=[];landingSectionCounter=0;landingBlockCounter=0;landingAnnotCounter=0;}
+  document.querySelectorAll('[onclick*="selectLandingScenario"]').forEach(b=>b.classList.toggle('sel',b.dataset.scenario===scenario));
+  document.getElementById('landing-new-section').classList.toggle('hidden',scenario!=='new');
+  document.getElementById('landing-edit-section').classList.toggle('hidden',scenario!=='edits');
+  document.getElementById('landing-adapt-section').classList.toggle('hidden',scenario!=='adapt');
+  document.getElementById('f-landing-scenario').value=scenario;
+  if(landingSections.length===0) landingAddSection();
+  else renderLandingEditor();
+}
+
+function landingAddSection(afterId=null){
+  landingSectionCounter++;
+  const section={id:'ls'+landingSectionCounter,type:'Главный экран',blocks:[]};
+  if(afterId!==null){
+    const idx=landingSections.findIndex(s=>s.id===afterId);
+    landingSections.splice(idx+1,0,section);
+  } else {
+    landingSections.push(section);
+  }
+  renderLandingEditor();
+}
+
+function landingRemoveSection(id){
+  if(landingSections.length<=1)return;
+  landingSections=landingSections.filter(s=>s.id!==id);
+  renderLandingEditor();
+}
+
+function landingSetSectionType(sectionId,type){
+  const s=landingSections.find(x=>x.id===sectionId);
+  if(s){s.type=type;renderLandingEditor();}
+}
+
+function landingAddBlock(sectionId,type){
+  landingBlockCounter++;
+  const section=landingSections.find(s=>s.id===sectionId);
+  if(!section)return;
+  const block=type==='image'
+    ?{id:'lb'+landingBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false}
+    :{id:'lb'+landingBlockCounter,type:'text',content:'',tag:null};
+  section.blocks.push(block);
+  renderLandingEditor();
+}
+
+function landingRemoveBlock(sectionId,blockId){
+  const section=landingSections.find(s=>s.id===sectionId);
+  if(!section)return;
+  section.blocks=section.blocks.filter(b=>b.id!==blockId);
+  renderLandingEditor();
+}
+
+function landingUpdateBlock(sectionId,blockId,content){
+  const section=landingSections.find(s=>s.id===sectionId);
+  if(!section)return;
+  const block=section.blocks.find(b=>b.id===blockId);
+  if(block)block.content=content;
+}
+
+function landingSetBlockTag(sectionId,blockId,tag){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.tag=block.tag===tag?null:tag;
+  renderLandingEditor();
+}
+
+function landingUpdateBlockDesc(sectionId,blockId,text){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(block)block.description=text;
+}
+
+function landingImageFileChange(sectionId,blockId,input){
+  const file=input.files[0];if(!file)return;
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.file=file;
+  const reader=new FileReader();
+  reader.onload=e=>{block.fileDataUrl=e.target.result;renderLandingEditor();};
+  reader.readAsDataURL(file);
+}
+
+function landingImageRemoveFile(sectionId,blockId){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.file=null;block.fileDataUrl=null;block.annotations=[];block.annotMode=false;
+  if(landingFullscreen&&landingFullscreen.sectionId===sectionId&&landingFullscreen.blockId===blockId) landingCloseFullscreen();
+  renderLandingEditor();
+}
+
+function landingToggleAnnotMode(sectionId,blockId){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.annotMode=!block.annotMode;
+  renderLandingEditor();
+}
+
+function landingImageClick(e,sectionId,blockId){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block||!block.annotMode)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  landingAnnotCounter++;
+  block.annotations.push({id:'la'+landingAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderLandingEditor();refreshLandingFullscreen();
+}
+
+function landingUpdateAnnot(sectionId,blockId,annotId,text){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  const a=block.annotations.find(a=>a.id===annotId);
+  if(a)a.text=text;
+}
+
+function landingRemoveAnnot(sectionId,blockId,annotId){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  block.annotations=block.annotations.filter(a=>a.id!==annotId);
+  renderLandingEditor();refreshLandingFullscreen();
+}
+
+function landingAnnotDragStart(e,sectionId,blockId,annotId){
+  landingDraggedAnnot={sectionId,blockId,annotId,offsetX:e.offsetX||0,offsetY:e.offsetY||0};
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',annotId);
+}
+
+function landingAnnotDragOver(e){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+}
+
+function landingAnnotDrop(e,sectionId,blockId){
+  e.preventDefault();if(!landingDraggedAnnot)return;
+  const block=landingSections.find(s=>s.id===landingDraggedAnnot.sectionId)?.blocks.find(b=>b.id===landingDraggedAnnot.blockId);
+  if(!block)return;
+  const a=block.annotations.find(a=>a.id===landingDraggedAnnot.annotId);
+  if(!a)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  a.x=Math.max(0,Math.min(82,((e.clientX-rect.left-landingDraggedAnnot.offsetX)/rect.width)*100));
+  a.y=Math.max(0,Math.min(75,((e.clientY-rect.top-landingDraggedAnnot.offsetY)/rect.height)*100));
+  landingDraggedAnnot=null;
+  renderLandingEditor();refreshLandingFullscreen();
+}
+
+function renderLandingBlock(section,block){
+  const sid=section.id,bid=block.id;
+  if(block.type==='text'){
+    const ph=PRES_TAGS.find(t=>t.id===block.tag)?.ph||'Введите текст или выберите тип…';
+    const tagBtns=PRES_TAGS.map(t=>
+      `<button type="button" class="pres-tag-btn${block.tag===t.id?' active':''}" onclick="landingSetBlockTag('${sid}','${bid}','${t.id}')">${t.label}</button>`
+    ).join('');
+    return `<div class="pres-block">
+      <span class="pres-block-icon">📝</span>
+      <div style="flex:1;min-width:0">
+        <div class="pres-block-content" contenteditable="true"
+          data-placeholder="${esc(ph)}"
+          onblur="landingUpdateBlock('${sid}','${bid}',this.textContent)">${esc(block.content)}</div>
+        <div class="pres-tag-row">${tagBtns}</div>
+      </div>
+      <button type="button" class="pres-block-del" onclick="landingRemoveBlock('${sid}','${bid}')" title="Удалить блок">✕</button>
+    </div>`;
+  }
+  let imgInner;
+  if(block.fileDataUrl){
+    const stickers=block.annotations.map(a=>`
+      <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+        draggable="true" ondragstart="landingAnnotDragStart(event,'${sid}','${bid}','${a.id}')">
+        <div class="pres-annot-body">
+          <div class="pres-annot-text" contenteditable="true"
+            onblur="landingUpdateAnnot('${sid}','${bid}','${a.id}',this.textContent)">${esc(a.text)}</div>
+          <button type="button" class="pres-annot-del" onclick="event.stopPropagation();landingRemoveAnnot('${sid}','${bid}','${a.id}')">✕</button>
+        </div>
+        <div class="pres-annot-arrow"></div>
+      </div>`).join('');
+    const clickzone=block.annotMode?`<div class="pres-img-clickzone" onclick="landingImageClick(event,'${sid}','${bid}')"></div>`:'';
+    const annotBtn=block.annotMode
+      ?`<button type="button" class="pres-annot-mode-btn active" onclick="landingToggleAnnotMode('${sid}','${bid}')">✓ Готово</button>`
+      :`<button type="button" class="pres-annot-mode-btn" onclick="landingToggleAnnotMode('${sid}','${bid}')">📍 Добавить пометку</button>`;
+    imgInner=`
+      <div class="pres-img-preview-wrap" ondragover="landingAnnotDragOver(event)" ondrop="landingAnnotDrop(event,'${sid}','${bid}')">
+        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <button type="button" class="pres-img-expand-btn" onclick="landingOpenFullscreen('${sid}','${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
+        <div class="pres-img-stickers">${stickers}</div>
+        ${clickzone}
+      </div>
+      <div class="pres-img-controls">
+        ${annotBtn}
+        <button type="button" class="btn-ghost btn-sm" style="font-size:11px;padding:3px 9px" onclick="landingImageRemoveFile('${sid}','${bid}')">✕ Удалить фото</button>
+      </div>`;
+  } else {
+    imgInner=`<label class="pres-img-upload">
+      <input type="file" accept=".jpg,.jpeg,.png" onchange="landingImageFileChange('${sid}','${bid}',this)">
+      📁 Загрузить файл
+    </label>`;
+  }
+  return `<div class="pres-block pres-block-img">
+    <div style="display:flex;gap:7px;align-items:flex-start;width:100%">
+      <span class="pres-block-icon">🖼️</span>
+      <div style="flex:1;min-width:0">
+        <input type="text" class="pres-img-desc" placeholder="Описание изображения…"
+          value="${esc(block.description)}" onchange="landingUpdateBlockDesc('${sid}','${bid}',this.value)">
+        ${imgInner}
+      </div>
+      <button type="button" class="pres-block-del" onclick="landingRemoveBlock('${sid}','${bid}')" title="Удалить блок">✕</button>
+    </div>
+  </div>`;
+}
+
+function renderLandingEditor(){
+  const editor=getLandingEditorEl();
+  if(!editor)return;
+  editor.innerHTML=landingSections.map((section,idx)=>`
+    <div class="land-section-wrap">
+      <div class="land-section-card">
+        <div class="land-section-num">${idx+1}</div>
+        <div class="land-section-body">
+          <div class="land-section-header">
+            <span class="land-section-title">Блок сайта ${idx+1}</span>
+            ${landingSections.length>1?`<button type="button" class="btn-ghost btn-sm" style="padding:3px 10px;font-size:11px;color:var(--review);border-color:rgba(217,48,37,.3)" onclick="landingRemoveSection('${section.id}')">Удалить</button>`:''}
+          </div>
+          <div class="land-type-row">
+            ${LAND_SECTION_TYPES.map(t=>`<button type="button" class="land-type-pill${section.type===t?' active':''}" onclick="landingSetSectionType('${section.id}','${t}')">${t}</button>`).join('')}
+          </div>
+          <div class="land-blocks">
+            ${section.blocks.length===0?'<div class="pres-canvas-empty" style="padding:14px 0;font-size:12px">Добавьте блоки с помощью кнопок ниже</div>':''}
+            ${section.blocks.map(block=>renderLandingBlock(section,block)).join('')}
+          </div>
+          <div class="land-block-actions">
+            <button type="button" class="btn-ghost btn-sm" onclick="landingAddBlock('${section.id}','text')">+ Текст</button>
+            <button type="button" class="btn-ghost btn-sm" onclick="landingAddBlock('${section.id}','image')">🖼 Изображение</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="land-add-after" onclick="landingAddSection('${section.id}')">+ Добавить секцию</button>
+    </div>`).join('');
+}
+
+// landing ref + materials + files
+function landingUpdateRefLink(val){
+  document.querySelectorAll('.land-reflink-input').forEach(el=>{if(el.value!==val)el.value=val;});
+}
+function landingSetRefFile(input){
+  landingRefFile=input.files[0]||null;input.value='';renderLandingRefFile();
+}
+function landingClearRefFile(){landingRefFile=null;renderLandingRefFile();}
+function renderLandingRefFile(){
+  const html=landingRefFile?`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(landingRefFile.name)}</span>
+    <button type="button" onclick="landingClearRefFile()" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`:'';
+  document.querySelectorAll('.land-ref-file-display').forEach(el=>el.innerHTML=html);
+}
+function landingAddMatFiles(input){
+  Array.from(input.files).forEach(f=>landingMatFiles.push(f));input.value='';renderLandingMatFiles();
+}
+function landingRemoveMatFile(i){landingMatFiles.splice(i,1);renderLandingMatFiles();}
+function renderLandingMatFiles(){
+  const html=landingMatFiles.map((f,i)=>`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(f.name)}</span>
+    <button type="button" onclick="landingRemoveMatFile(${i})" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`).join('');
+  document.querySelectorAll('.land-mat-files-list').forEach(el=>el.innerHTML=html);
+}
+function landingAddFiles(input){
+  Array.from(input.files).forEach(f=>landingFiles.push(f));input.value='';renderLandingFiles();
+}
+function landingRemoveFile(i){landingFiles.splice(i,1);renderLandingFiles();}
+function renderLandingFiles(){
+  const html=landingFiles.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:12px">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(f.name)}</span>
+    <button type="button" onclick="landingRemoveFile(${i})" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`).join('');
+  document.querySelectorAll('.land-files-list').forEach(el=>el.innerHTML=html);
+}
+
+// landing fullscreen (reuses #pres-fullscreen-modal)
+function landingOpenFullscreen(sectionId,blockId){
+  presFullscreen=null;
+  landingFullscreen={sectionId,blockId};
+  refreshLandingFullscreen();
+  document.getElementById('pres-fullscreen-modal').classList.remove('hidden');
+}
+function landingCloseFullscreen(){
+  landingFullscreen=null;
+  const modal=document.getElementById('pres-fullscreen-modal');
+  if(modal)modal.classList.add('hidden');
+}
+function landingFullscreenClick(e,sectionId,blockId){
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  landingAnnotCounter++;
+  block.annotations.push({id:'la'+landingAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderLandingEditor();refreshLandingFullscreen();
+}
+function refreshLandingFullscreen(){
+  if(!landingFullscreen)return;
+  const {sectionId,blockId}=landingFullscreen;
+  const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
+  if(!block||!block.fileDataUrl){landingCloseFullscreen();return;}
+  const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
+  const stickers=block.annotations.map(a=>`
+    <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+      draggable="true" ondragstart="landingAnnotDragStart(event,'${sectionId}','${blockId}','${a.id}')">
+      <div class="pres-annot-body">
+        <div class="pres-annot-text" contenteditable="true"
+          onblur="landingUpdateAnnot('${sectionId}','${blockId}','${a.id}',this.textContent)">${esc(a.text)}</div>
+        <button type="button" class="pres-annot-del" onclick="event.stopPropagation();landingRemoveAnnot('${sectionId}','${blockId}','${a.id}')">✕</button>
+      </div>
+      <div class="pres-annot-arrow"></div>
+    </div>`).join('');
+  inner.innerHTML=`
+    <img src="${block.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <div class="pres-fullscreen-stickers" ondragover="landingAnnotDragOver(event)" ondrop="landingAnnotDrop(event,'${sectionId}','${blockId}')">${stickers}</div>
+    <div class="pres-fullscreen-clickzone" onclick="landingFullscreenClick(event,'${sectionId}','${blockId}')"></div>`;
+}
+
+// ── OUTDOOR EDITOR ──
+function selectOutdoorScenario(scenario){
+  outdoorScenario=scenario;
+  document.querySelectorAll('[onclick*="selectOutdoorScenario"]').forEach(b=>b.classList.toggle('sel',b.dataset.scenario===scenario));
+  document.getElementById('outdoor-new-section').classList.toggle('hidden',scenario!=='new');
+  document.getElementById('outdoor-edit-section').classList.toggle('hidden',scenario!=='edits');
+  document.getElementById('outdoor-adapt-section').classList.toggle('hidden',scenario!=='adapt');
+  document.getElementById('f-outdoor-scenario').value=scenario;
+  if(scenario==='new'){renderOutdoorTypePills();renderOutdoorEditor();}
+  else if(scenario==='edits') renderOutdoorEditMockup();
+  else if(scenario==='adapt'){renderOutdoorAdaptTypes();renderOutdoorAdaptSizes();}
+}
+
+function renderOutdoorTypePills(){
+  const c=document.getElementById('outdoor-media-types');if(!c)return;
+  c.innerHTML=OUTDOOR_MEDIA_TYPES.map(t=>
+    `<button type="button" class="outdoor-type-pill${outdoorSelectedTypes.includes(t)?' active':''}" onclick="outdoorToggleType('${esc(t)}')">${esc(t)}</button>`
+  ).join('');
+}
+function outdoorToggleType(type){
+  const i=outdoorSelectedTypes.indexOf(type);
+  if(i>-1) outdoorSelectedTypes.splice(i,1); else outdoorSelectedTypes.push(type);
+  renderOutdoorTypePills();
+}
+
+function renderOutdoorAdaptTypes(){
+  const c=document.getElementById('outdoor-adapt-types');if(!c)return;
+  c.innerHTML=OUTDOOR_MEDIA_TYPES.map(t=>
+    `<button type="button" class="outdoor-type-pill${outdoorAdaptSelectedTypes.includes(t)?' active':''}" onclick="outdoorToggleAdaptType('${esc(t)}')">${esc(t)}</button>`
+  ).join('');
+}
+function outdoorToggleAdaptType(type){
+  const i=outdoorAdaptSelectedTypes.indexOf(type);
+  if(i>-1) outdoorAdaptSelectedTypes.splice(i,1); else outdoorAdaptSelectedTypes.push(type);
+  renderOutdoorAdaptTypes();renderOutdoorAdaptSizes();
+}
+function renderOutdoorAdaptSizes(){
+  const c=document.getElementById('outdoor-adapt-sizes');if(!c)return;
+  if(!outdoorAdaptSelectedTypes.length){c.innerHTML='';return;}
+  c.innerHTML=`<div class="fg" style="margin-top:14px">
+    <label class="field-label">Размеры форматов (мм)</label>
+    ${outdoorAdaptSelectedTypes.map(t=>{
+      const k=t.replace(/[^a-zA-Zа-яёА-ЯЁ0-9]/g,'');
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text-dim);min-width:130px;flex-shrink:0">${esc(t)}</span>
+        <input type="number" id="f-adw-${k}" placeholder="Ширина" style="flex:1">
+        <span style="color:var(--text-muted);font-size:12px;flex-shrink:0">×</span>
+        <input type="number" id="f-adh-${k}" placeholder="Высота" style="flex:1">
+        <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">мм</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function outdoorSetAnimation(val){
+  outdoorAnimation=val;
+  document.getElementById('outdoor-anim-yes')?.classList.toggle('active',val);
+  document.getElementById('outdoor-anim-no')?.classList.toggle('active',!val);
+  document.getElementById('outdoor-anim-desc-wrap')?.classList.toggle('hidden',!val);
+}
+
+function outdoorAddBlock(type){
+  outdoorBlockCounter++;
+  const block=type==='image'
+    ?{id:'ob'+outdoorBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false,tag:null}
+    :{id:'ob'+outdoorBlockCounter,type:'text',content:'',tag:null};
+  outdoorBlocks.push(block);
+  renderOutdoorEditor();
+}
+function outdoorRemoveBlock(blockId){
+  outdoorBlocks=outdoorBlocks.filter(b=>b.id!==blockId);
+  renderOutdoorEditor();
+}
+function outdoorUpdateBlock(blockId,content){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(b)b.content=content;
+}
+function outdoorSetBlockTag(blockId,tag){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  b.tag=b.tag===tag?null:tag;renderOutdoorEditor();
+}
+function outdoorUpdateBlockDesc(blockId,text){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(b)b.description=text;
+}
+function outdoorImageFileChange(blockId,input){
+  const file=input.files[0];if(!file)return;
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  b.file=file;
+  const reader=new FileReader();
+  reader.onload=e=>{b.fileDataUrl=e.target.result;renderOutdoorEditor();};
+  reader.readAsDataURL(file);
+}
+function outdoorImageRemoveFile(blockId){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  b.file=null;b.fileDataUrl=null;b.annotations=[];b.annotMode=false;
+  if(outdoorFullscreen&&outdoorFullscreen.blockId===blockId) outdoorCloseFullscreen();
+  renderOutdoorEditor();
+}
+function outdoorToggleAnnotMode(blockId){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  b.annotMode=!b.annotMode;renderOutdoorEditor();
+}
+function outdoorImageClick(e,blockId){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b||!b.annotMode)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  outdoorAnnotCounter++;
+  b.annotations.push({id:'oa'+outdoorAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderOutdoorEditor();refreshOutdoorFullscreen();
+}
+function outdoorUpdateAnnot(blockId,annotId,text){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  const a=b.annotations.find(a=>a.id===annotId);if(a)a.text=text;
+}
+function outdoorRemoveAnnot(blockId,annotId){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  b.annotations=b.annotations.filter(a=>a.id!==annotId);
+  renderOutdoorEditor();refreshOutdoorFullscreen();
+}
+function outdoorAnnotDragStart(e,blockId,annotId){
+  outdoorDraggedAnnot={blockId,annotId,offsetX:e.offsetX||0,offsetY:e.offsetY||0};
+  e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',annotId);
+}
+function outdoorAnnotDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';}
+function outdoorAnnotDrop(e,blockId){
+  e.preventDefault();if(!outdoorDraggedAnnot)return;
+  const b=outdoorBlocks.find(b=>b.id===outdoorDraggedAnnot.blockId);if(!b)return;
+  const a=b.annotations.find(a=>a.id===outdoorDraggedAnnot.annotId);if(!a)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  a.x=Math.max(0,Math.min(82,((e.clientX-rect.left-outdoorDraggedAnnot.offsetX)/rect.width)*100));
+  a.y=Math.max(0,Math.min(75,((e.clientY-rect.top-outdoorDraggedAnnot.offsetY)/rect.height)*100));
+  outdoorDraggedAnnot=null;renderOutdoorEditor();refreshOutdoorFullscreen();
+}
+
+function renderOutdoorBlock(block,idx){
+  const bid=block.id;
+  const tagBtns=OUTDOOR_BLOCK_TAGS.map(t=>
+    `<button type="button" class="outdoor-type-pill${block.tag===t.id?' active':''}" onclick="outdoorSetBlockTag('${bid}','${t.id}')">${t.label}</button>`
+  ).join('');
+  let contentHtml;
+  if(block.type==='text'){
+    const ph=OUTDOOR_BLOCK_TAGS.find(t=>t.id===block.tag)?.ph||'Введите текст…';
+    contentHtml=`<div class="pres-block-content" contenteditable="true"
+      data-placeholder="${esc(ph)}"
+      onblur="outdoorUpdateBlock('${bid}',this.textContent)">${esc(block.content)}</div>`;
+  } else if(block.fileDataUrl){
+    const stickers=block.annotations.map(a=>`
+      <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+        draggable="true" ondragstart="outdoorAnnotDragStart(event,'${bid}','${a.id}')">
+        <div class="pres-annot-body">
+          <div class="pres-annot-text" contenteditable="true"
+            onblur="outdoorUpdateAnnot('${bid}','${a.id}',this.textContent)">${esc(a.text)}</div>
+          <button type="button" class="pres-annot-del" onclick="event.stopPropagation();outdoorRemoveAnnot('${bid}','${a.id}')">✕</button>
+        </div>
+        <div class="pres-annot-arrow"></div>
+      </div>`).join('');
+    const clickzone=block.annotMode?`<div class="pres-img-clickzone" onclick="outdoorImageClick(event,'${bid}')"></div>`:'';
+    const annotBtn=block.annotMode
+      ?`<button type="button" class="pres-annot-mode-btn active" onclick="outdoorToggleAnnotMode('${bid}')">✓ Готово</button>`
+      :`<button type="button" class="pres-annot-mode-btn" onclick="outdoorToggleAnnotMode('${bid}')">📍 Добавить пометку</button>`;
+    contentHtml=`
+      <input type="text" class="pres-img-desc" placeholder="Описание…"
+        value="${esc(block.description)}" onchange="outdoorUpdateBlockDesc('${bid}',this.value)">
+      <div class="pres-img-preview-wrap" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorAnnotDrop(event,'${bid}')">
+        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <button type="button" class="pres-img-expand-btn" onclick="outdoorOpenFullscreen('${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
+        <div class="pres-img-stickers">${stickers}</div>
+        ${clickzone}
+      </div>
+      <div class="pres-img-controls">
+        ${annotBtn}
+        <button type="button" class="btn-ghost btn-sm" style="font-size:11px;padding:3px 9px" onclick="outdoorImageRemoveFile('${bid}')">✕ Удалить фото</button>
+      </div>`;
+  } else {
+    contentHtml=`
+      <input type="text" class="pres-img-desc" placeholder="Описание…"
+        value="${esc(block.description)}" onchange="outdoorUpdateBlockDesc('${bid}',this.value)">
+      <label class="pres-img-upload">
+        <input type="file" accept=".jpg,.jpeg,.png" onchange="outdoorImageFileChange('${bid}',this)">
+        📁 Загрузить файл
+      </label>`;
+  }
+  return `<div class="outdoor-block-card">
+    <div class="outdoor-block-num">${idx+1}</div>
+    <div style="flex:1;min-width:0;padding:12px 14px">
+      <div class="outdoor-tag-row">${tagBtns}</div>
+      ${contentHtml}
+    </div>
+    <button type="button" onclick="outdoorRemoveBlock('${bid}')"
+      style="align-self:flex-start;margin:12px 10px 0 0;background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px;cursor:pointer" title="Удалить">✕</button>
+  </div>`;
+}
+
+function renderOutdoorEditor(){
+  const editor=document.getElementById('outdoor-editor-new');if(!editor)return;
+  editor.innerHTML=outdoorBlocks.length===0
+    ?'<div class="pres-canvas-empty" style="padding:14px 0;font-size:12px">Добавьте блоки с помощью кнопок ниже</div>'
+    :outdoorBlocks.map((b,i)=>renderOutdoorBlock(b,i)).join('');
+}
+
+// outdoor ref + mat + source
+function outdoorUpdateRefLink(val){
+  document.querySelectorAll('.outdoor-reflink-input').forEach(el=>{if(el.value!==val)el.value=val;});
+}
+function outdoorSetRefFile(input){outdoorRefFile=input.files[0]||null;input.value='';renderOutdoorRefFile();}
+function outdoorClearRefFile(){outdoorRefFile=null;renderOutdoorRefFile();}
+function renderOutdoorRefFile(){
+  const html=outdoorRefFile?`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(outdoorRefFile.name)}</span>
+    <button type="button" onclick="outdoorClearRefFile()" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`:'';
+  document.querySelectorAll('.outdoor-ref-file-display').forEach(el=>el.innerHTML=html);
+}
+function outdoorAddMatFiles(input){
+  Array.from(input.files).forEach(f=>outdoorMatFiles.push(f));input.value='';renderOutdoorMatFiles();
+}
+function outdoorRemoveMatFile(i){outdoorMatFiles.splice(i,1);renderOutdoorMatFiles();}
+function renderOutdoorMatFiles(){
+  const html=outdoorMatFiles.map((f,i)=>`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(f.name)}</span>
+    <button type="button" onclick="outdoorRemoveMatFile(${i})" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`).join('');
+  document.querySelectorAll('.outdoor-mat-files-list').forEach(el=>el.innerHTML=html);
+}
+function outdoorSetSourceFile(input){outdoorSourceFile=input.files[0]||null;input.value='';renderOutdoorSourceFile();}
+function outdoorClearSourceFile(){outdoorSourceFile=null;renderOutdoorSourceFile();}
+function renderOutdoorSourceFile(){
+  const html=outdoorSourceFile?`<div class="pres-file-row">
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">📄 ${esc(outdoorSourceFile.name)}</span>
+    <button type="button" onclick="outdoorClearSourceFile()" style="background:none;color:var(--text-muted);font-size:14px;padding:0 4px;line-height:1;border-radius:4px">✕</button>
+  </div>`:'';
+  document.querySelectorAll('.outdoor-source-display').forEach(el=>el.innerHTML=html);
+}
+
+// outdoor fullscreen (reuses #pres-fullscreen-modal)
+function outdoorOpenFullscreen(blockId){
+  presFullscreen=null;landingFullscreen=null;
+  outdoorFullscreen={blockId};
+  refreshOutdoorFullscreen();
+  document.getElementById('pres-fullscreen-modal').classList.remove('hidden');
+}
+function outdoorCloseFullscreen(){
+  outdoorFullscreen=null;
+  const modal=document.getElementById('pres-fullscreen-modal');
+  if(modal)modal.classList.add('hidden');
+}
+function outdoorFullscreenClick(e,blockId){
+  const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  outdoorAnnotCounter++;
+  b.annotations.push({id:'oa'+outdoorAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderOutdoorEditor();refreshOutdoorFullscreen();
+}
+function refreshOutdoorFullscreen(){
+  if(!outdoorFullscreen)return;
+  if(outdoorFullscreen.type==='editMockup'){_refreshOutdoorEditMockupFullscreen();return;}
+  const {blockId}=outdoorFullscreen;
+  const b=outdoorBlocks.find(b=>b.id===blockId);
+  if(!b||!b.fileDataUrl){outdoorCloseFullscreen();return;}
+  const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
+  const stickers=b.annotations.map(a=>`
+    <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+      draggable="true" ondragstart="outdoorAnnotDragStart(event,'${blockId}','${a.id}')">
+      <div class="pres-annot-body">
+        <div class="pres-annot-text" contenteditable="true"
+          onblur="outdoorUpdateAnnot('${blockId}','${a.id}',this.textContent)">${esc(a.text)}</div>
+        <button type="button" class="pres-annot-del" onclick="event.stopPropagation();outdoorRemoveAnnot('${blockId}','${a.id}')">✕</button>
+      </div>
+      <div class="pres-annot-arrow"></div>
+    </div>`).join('');
+  inner.innerHTML=`
+    <img src="${b.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <div class="pres-fullscreen-stickers" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorAnnotDrop(event,'${blockId}')">${stickers}</div>
+    <div class="pres-fullscreen-clickzone" onclick="outdoorFullscreenClick(event,'${blockId}')"></div>`;
+}
+
+// ── OUTDOOR EDIT MOCKUP ──
+function renderOutdoorEditMockup(){
+  const c=document.getElementById('outdoor-edit-mockup-container');if(!c)return;
+  if(!outdoorEditMockup.fileDataUrl){
+    c.innerHTML=`<label class="pres-file-btn" style="display:inline-flex">
+      <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="outdoorEditMockupFileChange(this)">
+      📁 Загрузить макет
+    </label>`;
+    return;
+  }
+  const stickers=outdoorEditMockup.annotations.map(a=>`
+    <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+      draggable="true" ondragstart="outdoorEditMockupAnnotDragStart(event,'${a.id}')">
+      <div class="pres-annot-body">
+        <div class="pres-annot-text" contenteditable="true"
+          onblur="outdoorEditMockupUpdateAnnot('${a.id}',this.textContent)">${esc(a.text)}</div>
+        <button type="button" class="pres-annot-del" onclick="event.stopPropagation();outdoorEditMockupRemoveAnnot('${a.id}')">✕</button>
+      </div>
+      <div class="pres-annot-arrow"></div>
+    </div>`).join('');
+  const clickzone=outdoorEditMockup.annotMode
+    ?`<div class="pres-img-clickzone" onclick="outdoorEditMockupClick(event)"></div>`:'';
+  const annotBtn=outdoorEditMockup.annotMode
+    ?`<button type="button" class="pres-annot-mode-btn active" onclick="outdoorEditMockupToggleAnnotMode()">✓ Готово</button>`
+    :`<button type="button" class="pres-annot-mode-btn" onclick="outdoorEditMockupToggleAnnotMode()">📍 Добавить пометку</button>`;
+  c.innerHTML=`
+    <div class="pres-img-preview-wrap"
+      ondragover="outdoorAnnotDragOver(event)"
+      ondrop="outdoorEditMockupAnnotDrop(event)">
+      <img src="${outdoorEditMockup.fileDataUrl}" class="pres-img-preview" alt="">
+      <button type="button" class="pres-img-expand-btn" onclick="outdoorEditMockupOpenFullscreen()" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
+      <div class="pres-img-stickers">${stickers}</div>
+      ${clickzone}
+    </div>
+    <div class="pres-img-controls">
+      ${annotBtn}
+      <button type="button" class="btn-ghost btn-sm" style="font-size:11px;padding:3px 9px" onclick="outdoorEditMockupRemove()">✕ Удалить</button>
+    </div>`;
+}
+
+function outdoorEditMockupFileChange(input){
+  const file=input.files[0];if(!file)return;
+  outdoorEditMockup.file=file;
+  const reader=new FileReader();
+  reader.onload=e=>{outdoorEditMockup.fileDataUrl=e.target.result;renderOutdoorEditMockup();};
+  reader.readAsDataURL(file);
+}
+function outdoorEditMockupRemove(){
+  outdoorEditMockup={fileDataUrl:null,file:null,annotations:[],annotMode:false};
+  if(outdoorFullscreen?.type==='editMockup') outdoorCloseFullscreen();
+  renderOutdoorEditMockup();
+}
+function outdoorEditMockupToggleAnnotMode(){
+  outdoorEditMockup.annotMode=!outdoorEditMockup.annotMode;
+  renderOutdoorEditMockup();
+}
+function outdoorEditMockupClick(e){
+  if(!outdoorEditMockup.annotMode)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  outdoorEditAnnotCounter++;
+  outdoorEditMockup.annotations.push({id:'oem'+outdoorEditAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderOutdoorEditMockup();_refreshOutdoorEditMockupFullscreen();
+}
+function outdoorEditMockupUpdateAnnot(annotId,text){
+  const a=outdoorEditMockup.annotations.find(a=>a.id===annotId);if(a)a.text=text;
+}
+function outdoorEditMockupRemoveAnnot(annotId){
+  outdoorEditMockup.annotations=outdoorEditMockup.annotations.filter(a=>a.id!==annotId);
+  renderOutdoorEditMockup();_refreshOutdoorEditMockupFullscreen();
+}
+function outdoorEditMockupAnnotDragStart(e,annotId){
+  outdoorDraggedAnnot={isMockup:true,annotId,offsetX:e.offsetX||0,offsetY:e.offsetY||0};
+  e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',annotId);
+}
+function outdoorEditMockupAnnotDrop(e){
+  e.preventDefault();if(!outdoorDraggedAnnot?.isMockup)return;
+  const a=outdoorEditMockup.annotations.find(a=>a.id===outdoorDraggedAnnot.annotId);if(!a)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  a.x=Math.max(0,Math.min(82,((e.clientX-rect.left-outdoorDraggedAnnot.offsetX)/rect.width)*100));
+  a.y=Math.max(0,Math.min(75,((e.clientY-rect.top-outdoorDraggedAnnot.offsetY)/rect.height)*100));
+  outdoorDraggedAnnot=null;renderOutdoorEditMockup();_refreshOutdoorEditMockupFullscreen();
+}
+function outdoorEditMockupOpenFullscreen(){
+  presFullscreen=null;landingFullscreen=null;
+  outdoorFullscreen={type:'editMockup'};
+  _refreshOutdoorEditMockupFullscreen();
+  document.getElementById('pres-fullscreen-modal').classList.remove('hidden');
+}
+function outdoorEditMockupFullscreenClick(e){
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width)*100;
+  const y=((e.clientY-rect.top)/rect.height)*100;
+  outdoorEditAnnotCounter++;
+  outdoorEditMockup.annotations.push({id:'oem'+outdoorEditAnnotCounter,x:Math.min(82,x),y:Math.min(75,y),text:''});
+  renderOutdoorEditMockup();_refreshOutdoorEditMockupFullscreen();
+}
+function _refreshOutdoorEditMockupFullscreen(){
+  if(outdoorFullscreen?.type!=='editMockup')return;
+  if(!outdoorEditMockup.fileDataUrl){outdoorCloseFullscreen();return;}
+  const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
+  const stickers=outdoorEditMockup.annotations.map(a=>`
+    <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
+      draggable="true" ondragstart="outdoorEditMockupAnnotDragStart(event,'${a.id}')">
+      <div class="pres-annot-body">
+        <div class="pres-annot-text" contenteditable="true"
+          onblur="outdoorEditMockupUpdateAnnot('${a.id}',this.textContent)">${esc(a.text)}</div>
+        <button type="button" class="pres-annot-del" onclick="event.stopPropagation();outdoorEditMockupRemoveAnnot('${a.id}')">✕</button>
+      </div>
+      <div class="pres-annot-arrow"></div>
+    </div>`).join('');
+  inner.innerHTML=`
+    <img src="${outdoorEditMockup.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <div class="pres-fullscreen-stickers" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorEditMockupAnnotDrop(event)">${stickers}</div>
+    <div class="pres-fullscreen-clickzone" onclick="outdoorEditMockupFullscreenClick(event)"></div>`;
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(presFullscreen) presCloseFullscreen();
+    else if(landingFullscreen) landingCloseFullscreen();
+    else if(outdoorFullscreen) outdoorCloseFullscreen();
+  }
+});
+
+// ── RESTORE SESSION ──
+try{
+  const saved=localStorage.getItem('df_user');
+  if(saved){
+    user=JSON.parse(saved);
+    selRole=user.role;
+    enterApp();
+  }
+}catch(e){localStorage.removeItem('df_user');}
+</script>
+</body>
+</html>
