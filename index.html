@@ -82,20 +82,27 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
 
 /* ── CLIENT ── */
 #client{min-height:100vh;display:flex;flex-direction:column}
-.tab-content{flex:1;padding:28px 24px;max-width:860px;margin:0 auto;width:100%}
-.section-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:20px}
+.tab-content{flex:1;padding:28px 24px;max-width:960px;margin:0 auto;width:100%}
+
+/* hero */
+.create-hero{background:linear-gradient(90deg,#e8f0fe 0%,#f0e6ff 100%);border-radius:16px;padding:48px;margin-bottom:32px}
+.create-hero-title{font-size:32px;font-weight:700;color:#1a1a2e;margin-bottom:12px;letter-spacing:-.02em;line-height:1.2}
+.create-hero-sub{font-size:16px;color:#5f6368;line-height:1.5}
 
 /* type grid */
-.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;margin-bottom:24px}
-.type-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--rs);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;user-select:none;box-shadow:var(--sh)}
-.type-card:hover{border-color:var(--accent);background:var(--accent-lt);box-shadow:var(--sh-md);transform:translateY(-1px)}
-.type-card.sel{border-color:var(--accent);background:var(--accent-lt);box-shadow:0 0 0 3px rgba(26,115,232,.12)}
-.type-emoji{font-size:24px;margin-bottom:6px;display:block}
-.type-name{font-size:11px;font-weight:600;color:var(--text-dim)}
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.type-card{background:#fff;border:2px solid transparent;border-radius:12px;padding:24px;min-height:160px;cursor:pointer;transition:box-shadow .2s,transform .2s,border-color .15s;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;position:relative}
+.type-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(-2px)}
+.type-card.sel{border-color:#1a73e8}
+.type-card-icon{font-size:48px;margin-bottom:12px;line-height:1;display:block}
+.type-card-name{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+.type-card-desc{font-size:13px;color:#5f6368;line-height:1.4;flex:1}
+.type-card-arrow{position:absolute;bottom:20px;right:20px;font-size:18px;font-weight:700;line-height:1}
 
 /* form card */
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh);animation:fadeUp .25s ease}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh);animation:fadeIn .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .form-title{font-size:17px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:8px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
@@ -355,7 +362,10 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
 
   <!-- CREATE -->
   <div id="tab-create" class="tab-content">
-    <div class="section-title">Новая задача</div>
+    <div class="create-hero">
+      <div class="create-hero-title">Поставить задачу дизайнерам</div>
+      <div class="create-hero-sub">Выберите тип задачи ниже — форма подскажет что заполнить</div>
+    </div>
     <div class="type-grid" id="type-grid"></div>
     <div id="task-form" class="hidden">
       <div class="form-card">
@@ -526,15 +536,15 @@ const DESIGNERS = [
 ];
 
 const TYPES = [
-  {id:'video',    e:'🎬', n:'Видео'},
-  {id:'post',     e:'📱', n:'Соцсети'},
-  {id:'pres',     e:'📊', n:'Презентация'},
-  {id:'landing',  e:'🌐', n:'Лендинг'},
-  {id:'outdoor',  e:'🏙️', n:'Наружная реклама'},
-  {id:'print',    e:'🖨️', n:'Полиграфия'},
-  {id:'brand',    e:'✨', n:'Фирм. стиль'},
-  {id:'edits',    e:'✏️', n:'Правки'},
-  {id:'campaign', e:'📣', n:'Рекл. кампания'},
+  {id:'video',    e:'🎬', n:'Видео',             desc:'Ролики, анимация, видеомонтаж',                color:'#e53935'},
+  {id:'post',     e:'📱', n:'Соцсети',           desc:'Посты, сторис, обложки, креативы',             color:'#8e24aa'},
+  {id:'pres',     e:'📊', n:'Презентация',        desc:'Презентации, питчи, коммерческие предложения', color:'#1a73e8'},
+  {id:'landing',  e:'🌐', n:'Лендинг',           desc:'Одностраничные сайты, промо-страницы',         color:'#00897b'},
+  {id:'outdoor',  e:'🏙️', n:'Наружная реклама', desc:'Билборды, сити-лайты, баннеры',               color:'#f57c00'},
+  {id:'print',    e:'🖨️', n:'Полиграфия',       desc:'Брошюры, листовки, каталоги',                 color:'#6d4c41'},
+  {id:'brand',    e:'✨', n:'Фирм. стиль',        desc:'Логотипы, гайдлайны, брендбук',               color:'#f9a825'},
+  {id:'edits',    e:'✏️', n:'Правки',           desc:'Редактирование макетов, корректировки',       color:'#546e7a'},
+  {id:'campaign', e:'📣', n:'Рекл. кампания',    desc:'Комплексные рекламные материалы',              color:'#e91e63'},
 ];
 
 const PRES_TAGS=[
@@ -1229,8 +1239,10 @@ function switchTab(tab){
 function buildTypeGrid(){
   document.getElementById('type-grid').innerHTML=TYPES.map(t=>
     `<div class="type-card" data-type="${t.id}" onclick="selectType('${t.id}')">
-       <span class="type-emoji">${t.e}</span>
-       <span class="type-name">${t.n}</span>
+       <span class="type-card-icon">${t.e}</span>
+       <div class="type-card-name">${t.n}</div>
+       <div class="type-card-desc">${t.desc}</div>
+       <span class="type-card-arrow" style="color:${t.color}">→</span>
      </div>`
   ).join('');
 }
