@@ -2398,6 +2398,24 @@ function buildTZBlock(t) {
   if (ex['print-reflink']) rows.push(['Референс', `<a href="${esc(ex['print-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
   if (ex.checks?.includes('duplex')) rows.push(['Печать', 'Двусторонняя']);
 
+  if (ex['outdoor-scenario']) rows.push(['Сценарий', esc({new:'Новый макет',edits:'Внести правки',adapt:'Адаптация'}[ex['outdoor-scenario']]||ex['outdoor-scenario'])]);
+  if (ex['outdoor-types']) rows.push(['Носители', esc(ex['outdoor-types'])]);
+  if (ex['outdoor-anim-desc']) rows.push(['Анимация', esc(ex['outdoor-anim-desc'])]);
+  if (ex['outdoor-reflink']) rows.push(['Файл для правок', `<a href="${esc(ex['outdoor-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['outdoor-adapt-types']) rows.push(['Форматы адаптации', esc(ex['outdoor-adapt-types'])]);
+  if (ex['outdoor-matfiles']?.length) rows.push(['Доп. материалы', ex['outdoor-matfiles'].map(f=>`<span style="display:block">📎 ${esc(f)}</span>`).join('')]);
+
+  if (ex['landing-reflink']) rows.push(['Ссылка на оригинал', `<a href="${esc(ex['landing-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['landing-files']?.length) rows.push(['Файлы', ex['landing-files'].map(f=>`<span style="display:block">📎 ${esc(f)}</span>`).join('')]);
+  if (ex['landing-matfiles']?.length) rows.push(['Доп. материалы', ex['landing-matfiles'].map(f=>`<span style="display:block">📎 ${esc(f)}</span>`).join('')]);
+  const landingSections = ex['landing-sections-new'] || ex['landing-sections-edits'] || ex['landing-sections-adapt'];
+  if (landingSections) {
+    try {
+      const secs = JSON.parse(landingSections);
+      rows.push(['Секции лендинга', secs.map((s,i)=>`<span style="display:block;font-size:12px">Блок ${i+1}: ${esc(s.type||'')}</span>`).join('')]);
+    } catch(e) {}
+  }
+
   if (!rows.length) return '';
 
   const html = rows.map(([label, val]) => `
