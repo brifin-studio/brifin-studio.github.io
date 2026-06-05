@@ -2390,6 +2390,14 @@ function buildTZBlock(t) {
     rows.push(['Слайды', slidesHtml]);
   }
 
+  if (ex['print-category']) rows.push(['Категория', esc(ex['print-category'])]);
+  if (ex['print-selected-types']) rows.push(['Тип', esc(ex['print-selected-types'])]);
+  if (ex['print-selected-format']) rows.push(['Формат', esc(ex['print-selected-format'])]);
+  if (ex['print-custom-size']) rows.push(['Размер', esc(ex['print-custom-size'])]);
+  if (ex['print-qty']) rows.push(['Тираж', esc(ex['print-qty']) + ' шт']);
+  if (ex['print-reflink']) rows.push(['Референс', `<a href="${esc(ex['print-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex.checks?.includes('duplex')) rows.push(['Печать', 'Двусторонняя']);
+
   if (!rows.length) return '';
 
   const html = rows.map(([label, val]) => `
