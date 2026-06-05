@@ -1,5 +1,21 @@
 # Работа дизайнеров — веб-приложение
 
+## Как работать с Claude
+
+Всегда работаем через Claude Code в терминале, не через чат.
+
+1. Открыть терминал
+2. Выполнить:
+   cd C:\Users\User\Дизайнер
+   claude
+3. Вставить промпт от Claude в строку ввода
+4. Claude Code сам читает index.html, вносит правки и пушит
+
+В чате (claude.ai) только проектируем и обсуждаем.
+Claude Code делает все правки в коде.
+
+---
+
 ## Ссылки
 - **Деплой:** https://budaev2876-sys.github.io/designer-tasks/
 - **GitHub:** https://github.com/budaev2876-sys/designer-tasks
