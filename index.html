@@ -791,7 +791,8 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
           <div class="tm-field-label">Описание / вводные</div>
           <div id="tm-desc-wrap"></div>
         </div>
-        <div id="tm-extra-wrap"></div>
+        <div id="tm-extra-wrap" style="margin-bottom:16px"></div>
+        <div id="tm-result-wrap"></div>
       </div>
       <div class="tm-sidebar">
         <div class="tm-sidebar-section" style="max-height:42%;flex:none">
@@ -2359,6 +2360,47 @@ function subscribeDesigners(){
 
 
 // ── TASK MODAL ──
+function buildTZBlock(t) {
+  const ex = t.extra || {};
+  const rows = [];
+
+  if (t.references) rows.push(['Референс', `<a href="${esc(t.references)}" target="_blank" style="color:var(--accent)">Открыть ссылку →</a>`]);
+  if (ex.platform) rows.push(['Платформа', esc(ex.platform)]);
+  if (ex.orient) rows.push(['Ориентация', esc(ex.orient)]);
+  if (ex.dur) rows.push(['Длительность', esc(ex.dur) + ' сек']);
+  if (ex.format) rows.push(['Формат', esc(ex.format)]);
+  if (ex.size) rows.push(['Размер', esc(ex.size)]);
+  if (ex.qty) rows.push(['Тираж', esc(ex.qty) + ' шт']);
+  if (ex.budget) rows.push(['Бюджет', Number(ex.budget).toLocaleString('ru') + '₽']);
+  if (ex['cg-brand']?.length) rows.push(['Категория', ex['cg-brand'].join(', ')]);
+  if (ex['cg-plat']?.length) rows.push(['Тип', ex['cg-plat'].join(', ')]);
+  if (ex.posts) rows.push(['Постов', esc(ex.posts)]);
+  if (ex.stories && ex.stories !== '0') rows.push(['Сторис', esc(ex.stories)]);
+  if (ex.slides) rows.push(['Слайдов', esc(ex.slides)]);
+  if (ex.sections) rows.push(['Секций', esc(ex.sections)]);
+  if (ex.flink) rows.push(['Файл', `<a href="${esc(ex.flink)}" target="_blank" style="color:var(--accent)">Скачать →</a>`]);
+  if (ex.refLink) rows.push(['Референс стиля', `<a href="${esc(ex.refLink)}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex.matFiles?.length) rows.push(['Доп. материалы', ex.matFiles.map(f => `<a href="${esc(f.url||f)}" target="_blank" style="color:var(--accent);display:block">📎 ${esc(f.name||'Файл')}</a>`).join('')]);
+
+  if (ex.presSlides?.length) {
+    const slidesHtml = ex.presSlides.map((s,i) => {
+      const blocks = (s.blocks||[]).map(b => b.type==='image' && b.url ? `<img src="${esc(b.url)}" style="max-width:100%;border-radius:6px;margin-top:6px">` : b.type==='text' ? `<div style="font-size:12px;color:var(--text-dim);margin-top:4px">${esc(b.tag||'')} — ${esc(b.text||'')}</div>` : '').join('');
+      return `<div style="margin-bottom:10px;padding:8px;background:var(--bg);border-radius:8px"><div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">СЛАЙД ${i+1}</div>${blocks}</div>`;
+    }).join('');
+    rows.push(['Слайды', slidesHtml]);
+  }
+
+  if (!rows.length) return '';
+
+  const html = rows.map(([label, val]) => `
+    <div style="margin-bottom:10px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px">${label}</div>
+      <div style="font-size:13px;color:var(--text)">${val}</div>
+    </div>`).join('');
+
+  return `<div class="tm-field-label" style="margin-bottom:8px">ТЗ от постановщика</div><div style="background:var(--bg);border-radius:10px;padding:14px">${html}</div>`;
+}
+
 function openTaskModal(id){
   if(wasDragging)return;
   const t=lastTasks.find(x=>x.id===id);
@@ -2397,10 +2439,31 @@ function openTaskModal(id){
     ?`<textarea class="tm-desc-textarea" id="tm-desc-val">${esc(t.description||'')}</textarea>`
     :`<div class="tm-desc-text">${esc(t.description||'—')}</div>`;
 
-  // Extra info snippet
-  const chips=buildChips(t.extra||{});
-  document.getElementById('tm-extra-wrap').innerHTML=chips
-    ?`<div class="tm-field-label" style="margin-bottom:6px">Детали</div><div style="display:flex;flex-wrap:wrap;gap:5px">${chips.replace(/tcard-chip/g,'tcard-chip')}</div>`:'';
+  // TZ block
+  document.getElementById('tm-extra-wrap').innerHTML = buildTZBlock(t);
+
+  // Result block
+  const isDesigner = user?.role === 'designer';
+  const result = t.result || {};
+  document.getElementById('tm-result-wrap').innerHTML = `
+  <div class="tm-field-label" style="margin-bottom:8px;margin-top:16px">Результат работы</div>
+  <div style="background:var(--bg);border-radius:10px;padding:14px">
+    ${isDesigner ? `
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Ссылка на результат</div>
+        <input id="tm-result-link" type="url" placeholder="https://figma.com/..." value="${esc(result.link||'')}" style="width:100%;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Файл (до 10 МБ)</div>
+        ${result.fileUrl ? `<div style="margin-bottom:6px"><a href="${esc(result.fileUrl)}" target="_blank" style="color:var(--accent)">📎 ${esc(result.fileName||'Файл')}</a></div>` : ''}
+        <input type="file" id="tm-result-file" style="font-size:12px">
+      </div>
+    ` : `
+      ${result.link ? `<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px">Ссылка</div><a href="${result.link}" target="_blank" style="color:var(--accent);font-size:13px">Открыть →</a></div>` : ''}
+      ${result.fileUrl ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px">Файл</div><a href="${result.fileUrl}" target="_blank" style="color:var(--accent);font-size:13px">📎 ${esc(result.fileName||'Скачать')}</a></div>` : ''}
+      ${!result.link && !result.fileUrl ? '<div style="font-size:13px;color:var(--text-muted)">Результат ещё не загружен</div>' : ''}
+    `}
+  </div>`;
 
   document.getElementById('tm-footer').innerHTML=canEdit
     ?`<button class="btn-primary" onclick="saveTaskModal()">Сохранить</button>
@@ -2489,6 +2552,26 @@ async function sendComment(){
 async function saveTaskModal(){
   if(!taskModalId)return;
   const t=lastTasks.find(x=>x.id===taskModalId);if(!t)return;
+
+  if (user?.role === 'designer') {
+    const resultLink = document.getElementById('tm-result-link')?.value.trim();
+    const resultFile = document.getElementById('tm-result-file')?.files?.[0];
+    const resultUpdate = {};
+    if (resultLink !== undefined) resultUpdate['result.link'] = resultLink;
+    if (resultFile) {
+      if (resultFile.size > 10 * 1024 * 1024) { toast('Файл больше 10 МБ', 'err'); return; }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        resultUpdate['result.fileUrl'] = e.target.result;
+        resultUpdate['result.fileName'] = resultFile.name;
+        await updateDoc(doc(db,'tasks',taskModalId), resultUpdate);
+      };
+      reader.readAsDataURL(resultFile);
+    } else if (Object.keys(resultUpdate).length) {
+      await updateDoc(doc(db,'tasks',taskModalId), resultUpdate);
+    }
+  }
+
   const newDeadline=document.getElementById('tm-deadline-val')?.value||null;
   const newDesc=document.getElementById('tm-desc-val')?.value.trim()||'';
   const changes={};const logEntries=[];
