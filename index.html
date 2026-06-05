@@ -510,15 +510,6 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
       <h3>Настрой профиль</h3>
       <p class="dauth-sub">Это увидят коллеги на доске</p>
 
-      <div class="profile-photo-row">
-        <div class="profile-photo-circle" id="dauth-photo-circle" style="background:var(--accent-lt)">🦕</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text)">Выбери своего динозавра</div>
-          <div class="profile-photo-hint">Он будет на карточках и в профиле</div>
-        </div>
-      </div>
-      <div class="dino-grid" id="dauth-dino-grid"></div>
-
       <div class="display-name-field">
         <label class="field-label">Имя на доске <span style="color:var(--text-muted);font-weight:400">(можно сократить)</span></label>
         <input type="text" id="dauth-display-name" placeholder="Например: Артём К.">
@@ -553,6 +544,17 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
     <div style="display:flex;gap:10px">
       <button class="btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="closeProfileEdit()">Отмена</button>
       <button class="btn-primary" style="flex:1;justify-content:center" onclick="saveProfileEdit()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div id="dino-picker-overlay" class="profile-edit-overlay hidden" onclick="if(event.target===this)closeDinoPicker()">
+  <div style="background:var(--card);border-radius:14px;padding:24px;width:320px;box-shadow:0 8px 32px rgba(0,0,0,.15)">
+    <h3 style="font-size:16px;font-weight:700;margin:0 0 16px;color:var(--text)">Выбери динозавра</h3>
+    <div class="dino-grid" id="sidebar-dino-grid"></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="closeDinoPicker()">Отмена</button>
+      <button class="btn-primary" style="flex:1;justify-content:center" onclick="saveDinoPicker()">Сохранить</button>
     </div>
   </div>
 </div>
@@ -638,9 +640,9 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
 <div id="designer" class="hidden">
   <!-- Sidebar -->
   <div class="designer-sidebar">
-    <div class="ds-profile" onclick="openProfileEdit()" title="Редактировать профиль">
-      <div class="ds-avatar" id="d-av">?</div>
-      <div style="min-width:0">
+    <div class="ds-profile">
+      <div class="ds-avatar" id="d-av" onclick="openDinoPicker()" title="Сменить динозавра" style="cursor:pointer"></div>
+      <div style="min-width:0;cursor:pointer" onclick="openProfileEdit()">
         <div class="ds-name" id="d-nm">—</div>
         <div class="ds-edit-hint">редактировать</div>
       </div>
@@ -1468,6 +1470,10 @@ window.peSelectDino     = peSelectDino;
 window.dAuthConfirm     = dAuthConfirm;
 window.openProfileEdit = openProfileEdit;
 window.closeProfileEdit = closeProfileEdit;
+window.openDinoPicker = openDinoPicker;
+window.closeDinoPicker = closeDinoPicker;
+window.sidebarSelectDino = sidebarSelectDino;
+window.saveDinoPicker = saveDinoPicker;
 window.peSelectColor   = peSelectColor;
 window.saveProfileEdit = saveProfileEdit;
 window.setFilter       = setFilter;
@@ -1759,9 +1765,9 @@ function updateDAuthStep2Btn(){
 
 function renderDinoGrid(containerId, ctx){
   const container = document.getElementById(containerId);
-  const selectedId = ctx==='dauth' ? dAuthSelectedDino : peSelectedDino;
+  const selectedId = ctx==='dauth' ? dAuthSelectedDino : ctx==='sidebar' ? sidebarSelectedDino : peSelectedDino;
   container.innerHTML = DINOS.map(d=>`
-    <div class="dino-opt${selectedId===d.id?' active':''}" onclick="${ctx==='dauth'?'dAuthSelectDino':'peSelectDino'}('${d.id}')">
+    <div class="dino-opt${selectedId===d.id?' active':''}" onclick="${ctx==='dauth'?'dAuthSelectDino':ctx==='sidebar'?'sidebarSelectDino':'peSelectDino'}('${d.id}')">
       ${d.emoji}<span>${d.name}</span>
     </div>`).join('');
 }
@@ -1874,6 +1880,40 @@ function setFilter(f, el){
     board.classList.add('kanban-entering');
     setTimeout(()=>board.classList.remove('kanban-entering'),220);
   },150);
+}
+
+// ── DINO PICKER ──
+let sidebarSelectedDino = null;
+
+function openDinoPicker(){
+  if(!user||user.role!=='designer') return;
+  sidebarSelectedDino = user.dino || null;
+  renderDinoGrid('sidebar-dino-grid', 'sidebar');
+  document.getElementById('dino-picker-overlay').classList.remove('hidden');
+}
+
+function closeDinoPicker(){
+  document.getElementById('dino-picker-overlay').classList.add('hidden');
+}
+
+function sidebarSelectDino(id){
+  sidebarSelectedDino = id;
+  renderDinoGrid('sidebar-dino-grid', 'sidebar');
+}
+
+async function saveDinoPicker(){
+  if(!sidebarSelectedDino) return;
+  user.dino = sidebarSelectedDino;
+  const dinoObj = DINOS.find(d=>d.id===sidebarSelectedDino);
+  const av = document.getElementById('d-av');
+  av.innerHTML = `<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🦕'}</span>`;
+  try{
+    await setDoc(doc(db,'designers',user.name),{dino:sidebarSelectedDino,lastSeen:serverTimestamp()},{merge:true});
+  }catch(e){}
+  localStorage.setItem('df_user',JSON.stringify(user));
+  closeDinoPicker();
+  toast('Динозавр обновлён');
+  renderKanban(lastTasks);
 }
 
 // ── PROFILE EDIT ──
