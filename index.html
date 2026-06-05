@@ -543,6 +543,14 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
   <div class="profile-edit-modal" style="position:relative">
     <button onclick="closeProfileEdit()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer">✕</button>
     <h3>Редактировать профиль</h3>
+    <div class="profile-photo-row">
+      <div class="profile-photo-circle" id="pe-photo-circle" style="background:var(--accent-lt)">🦕</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Твой динозавр</div>
+        <div class="profile-photo-hint">Выбери ниже чтобы сменить</div>
+      </div>
+    </div>
+    <div class="dino-grid" id="pe-dino-grid" style="margin-bottom:16px"></div>
     <div class="fg" style="margin-bottom:16px">
       <label class="field-label">Имя на доске</label>
       <input type="text" id="pe-name-input">
@@ -552,18 +560,6 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
     <div style="display:flex;gap:10px">
       <button class="btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="closeProfileEdit()">Отмена</button>
       <button class="btn-primary" style="flex:1;justify-content:center" onclick="saveProfileEdit()">Сохранить</button>
-    </div>
-  </div>
-</div>
-
-<div id="dino-picker-overlay" class="profile-edit-overlay hidden" onclick="if(event.target===this)closeDinoPicker()">
-  <div style="background:var(--card);border-radius:14px;padding:24px;width:320px;box-shadow:0 8px 32px rgba(0,0,0,.15);position:relative">
-    <button onclick="closeDinoPicker()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer">✕</button>
-    <h3 style="font-size:16px;font-weight:700;margin:0 0 16px;color:var(--text)">Выбери динозавра</h3>
-    <div class="dino-grid" id="sidebar-dino-grid"></div>
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <button class="btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="closeDinoPicker()">Отмена</button>
-      <button class="btn-primary" style="flex:1;justify-content:center" onclick="saveDinoPicker()">Сохранить</button>
     </div>
   </div>
 </div>
@@ -640,7 +636,7 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
 
   <!-- WORKLOAD / CLIENT KANBAN -->
   <div id="tab-workload" class="tab-content hidden">
-    <div id="client-kanban" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:4px 0;overflow-x:auto"></div>
+    <div id="client-kanban" class="kanban" style="padding:20px"></div>
   </div>
 </div>
 
@@ -649,7 +645,7 @@ label.field-label{display:block;color:var(--text-dim);font-size:11px;font-weight
   <!-- Sidebar -->
   <div class="designer-sidebar">
     <div class="ds-profile">
-      <div class="ds-avatar" id="d-av" onclick="openDinoPicker()" title="Сменить динозавра" style="cursor:pointer"></div>
+      <div class="ds-avatar" id="d-av" onclick="openProfileEdit()" title="Редактировать профиль" style="cursor:pointer"></div>
       <div style="min-width:0;cursor:pointer" onclick="openProfileEdit()">
         <div class="ds-name" id="d-nm">—</div>
         <div class="ds-edit-hint">редактировать</div>
@@ -1479,10 +1475,6 @@ window.dAuthConfirm     = dAuthConfirm;
 window.switchDesigner = switchDesigner;
 window.openProfileEdit = openProfileEdit;
 window.closeProfileEdit = closeProfileEdit;
-window.openDinoPicker = openDinoPicker;
-window.closeDinoPicker = closeDinoPicker;
-window.sidebarSelectDino = sidebarSelectDino;
-window.saveDinoPicker = saveDinoPicker;
 window.peSelectColor   = peSelectColor;
 window.saveProfileEdit = saveProfileEdit;
 window.setFilter       = setFilter;
@@ -1823,9 +1815,9 @@ function updateDAuthStep2Btn(){
 
 function renderDinoGrid(containerId, ctx){
   const container = document.getElementById(containerId);
-  const selectedId = ctx==='dauth' ? dAuthSelectedDino : ctx==='sidebar' ? sidebarSelectedDino : peSelectedDino;
+  const selectedId = ctx==='dauth' ? dAuthSelectedDino : peSelectedDino;
   container.innerHTML = DINOS.map(d=>`
-    <div class="dino-opt${selectedId===d.id?' active':''}" onclick="${ctx==='dauth'?'dAuthSelectDino':ctx==='sidebar'?'sidebarSelectDino':'peSelectDino'}('${d.id}')">
+    <div class="dino-opt${selectedId===d.id?' active':''}" onclick="${ctx==='dauth'?'dAuthSelectDino':'peSelectDino'}('${d.id}')">
       ${d.emoji}<span>${d.name}</span>
     </div>`).join('');
 }
@@ -1949,44 +1941,16 @@ function setFilter(f, el){
   },150);
 }
 
-// ── DINO PICKER ──
-let sidebarSelectedDino = null;
-
-function openDinoPicker(){
-  if(!user||user.role!=='designer') return;
-  sidebarSelectedDino = user.dino || null;
-  renderDinoGrid('sidebar-dino-grid', 'sidebar');
-  document.getElementById('dino-picker-overlay').classList.remove('hidden');
-}
-
-function closeDinoPicker(){
-  document.getElementById('dino-picker-overlay').classList.add('hidden');
-}
-
-function sidebarSelectDino(id){
-  sidebarSelectedDino = id;
-  renderDinoGrid('sidebar-dino-grid', 'sidebar');
-}
-
-async function saveDinoPicker(){
-  if(!sidebarSelectedDino) return;
-  user.dino = sidebarSelectedDino;
-  const dinoObj = DINOS.find(d=>d.id===sidebarSelectedDino);
-  const av = document.getElementById('d-av');
-  av.innerHTML = `<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🦕'}</span>`;
-  try{
-    await setDoc(doc(db,'designers',user.name),{dino:sidebarSelectedDino,lastSeen:serverTimestamp()},{merge:true});
-  }catch(e){}
-  localStorage.setItem('df_user',JSON.stringify(user));
-  closeDinoPicker();
-  toast('Динозавр обновлён');
-  renderKanban(lastTasks);
-}
-
 // ── PROFILE EDIT ──
 function openProfileEdit(){
   if(!user||user.role!=='designer')return;
   peSelectedColor=user.color;
+  peSelectedDino = user.dino || null;
+  const dinoObj = DINOS.find(d=>d.id===user.dino);
+  const circle = document.getElementById('pe-photo-circle');
+  circle.textContent = dinoObj ? dinoObj.emoji : '🦕';
+  circle.style.background = (user.color||'#4285f4')+'22';
+  renderDinoGrid('pe-dino-grid','pe');
   document.getElementById('pe-name-input').value=user.displayName||user.name;
   // Color swatches
   const container=document.getElementById('pe-color-swatches');
@@ -2015,7 +1979,7 @@ async function saveProfileEdit(){
   const newName=document.getElementById('pe-name-input').value.trim();
   if(!newName){ toast('Введите имя','err'); return; }
   const color=peSelectedColor||user.color;
-  const dino=user.dino;
+  const dino=peSelectedDino||user.dino;
   try{
     await setDoc(doc(db,'designers',user.name),{displayName:newName,color,dino,lastSeen:serverTimestamp()},{merge:true});
   }catch(e){}
@@ -2249,10 +2213,10 @@ function renderClientKanban(tasks){
   const board = document.getElementById('client-kanban');
   if(!board) return;
   const cols = [
-    {id:'new',     label:'Новое',      color:'#4285f4'},
-    {id:'wip',     label:'В работе',   color:'#fbbc04'},
-    {id:'review',  label:'На правках', color:'#ea4335'},
-    {id:'done',    label:'Готово',     color:'#34a853'},
+    {id:'new',    label:'НОВОЕ',      color:'#4285f4'},
+    {id:'wip',    label:'В РАБОТЕ',   color:'#fbbc04'},
+    {id:'review', label:'НА ПРАВКАХ', color:'#ea4335'},
+    {id:'done',   label:'ГОТОВО',     color:'#34a853'},
   ];
   board.innerHTML = cols.map(col=>{
     const colTasks = tasks.filter(t=>t.status===col.id);
@@ -2264,8 +2228,7 @@ function renderClientKanban(tasks){
       const pBadge = t.priority==='urgent'?'<span class="pbadge pbadge-urgent">Срочный</span>':
                      t.priority==='high'?'<span class="pbadge pbadge-high">Высокий</span>':
                      '<span class="pbadge pbadge-normal">Обычный</span>';
-      return `<div class="tcard" style="border-color:${dColor};background:${hexToRgba(dColor,.05)};cursor:pointer"
-        onclick="openTaskModal('${t.id}')">
+      return `<div class="tcard" style="border-color:${dColor};background:${hexToRgba(dColor,.05)};cursor:pointer" onclick="openTaskModal('${t.id}')">
         <div class="tcard-row1">
           <div class="tcard-type">${esc(t.typeEmoji||'📋')} ${esc(t.typeName||'')}</div>
           ${pBadge}
@@ -2280,7 +2243,7 @@ function renderClientKanban(tasks){
           <div class="tcard-deadline ${dlClass}">📅 ${dlTxt}</div>
         </div>
       </div>`;
-    }).join('');
+    }).join('') || '<div class="kcol-empty">Нет задач</div>';
     return `<div class="kcol">
       <div class="kcol-head">
         <div class="kcol-stripe" style="background:${col.color}"></div>
