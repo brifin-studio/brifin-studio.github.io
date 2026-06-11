@@ -2559,9 +2559,24 @@ function buildTZBlock(t) {
 
   if (ex['outdoor-scenario']) rows.push(['Сценарий', esc({new:'Новый макет',edits:'Внести правки',adapt:'Адаптация'}[ex['outdoor-scenario']]||ex['outdoor-scenario'])]);
   if (ex['outdoor-types']) rows.push(['Носители', esc(ex['outdoor-types'])]);
+  if (ex['outdoor-width']||ex['outdoor-height']||ex['outdoor-dpi']) {
+    const dims=[];
+    if(ex['outdoor-width']&&ex['outdoor-height']) dims.push(`${esc(ex['outdoor-width'])} × ${esc(ex['outdoor-height'])} мм`);
+    else if(ex['outdoor-width']) dims.push(`ш ${esc(ex['outdoor-width'])} мм`);
+    else if(ex['outdoor-height']) dims.push(`в ${esc(ex['outdoor-height'])} мм`);
+    if(ex['outdoor-dpi']) dims.push(`${esc(ex['outdoor-dpi'])} dpi`);
+    rows.push(['Размер / Разрешение', dims.join(' · ')]);
+  }
   if (ex['outdoor-anim-desc']) rows.push(['Анимация', esc(ex['outdoor-anim-desc'])]);
-  if (ex['outdoor-reflink']) rows.push(['Файл для правок', `<a href="${esc(ex['outdoor-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['outdoor-flink']) rows.push(['Файл для правок', `<a href="${esc(ex['outdoor-flink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['outdoor-edit-notes']) rows.push(['Правки', `<div style="white-space:pre-line">${esc(ex['outdoor-edit-notes'])}</div>`]);
+  if (ex['outdoor-flink-adapt']) rows.push(['Оригинальный файл', `<a href="${esc(ex['outdoor-flink-adapt'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['outdoor-source']) rows.push(['Исходный макет', `📎 ${esc(ex['outdoor-source'])}`]);
   if (ex['outdoor-adapt-types']) rows.push(['Форматы адаптации', esc(ex['outdoor-adapt-types'])]);
+  if (ex['outdoor-adapt-sizes']) { try { const _sz=JSON.parse(ex['outdoor-adapt-sizes']); rows.push(['Размеры адаптации', Object.entries(_sz).map(([_t,_d])=>`<span style="display:block;font-size:12px">${esc(_t)}: ${_d.w&&_d.h?`${esc(_d.w)} × ${esc(_d.h)} мм`:_d.w?`ш ${esc(_d.w)} мм`:`в ${esc(_d.h)} мм`}</span>`).join('')]); } catch(e){} }
+  if (ex['outdoor-reflink']) rows.push(['Референс стиля', `<a href="${esc(ex['outdoor-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
+  if (ex['outdoor-reffile']) rows.push(['Файл референса', `📎 ${esc(ex['outdoor-reffile'])}`]);
+  if (ex['outdoor-blocks']) { try { const _obs=JSON.parse(ex['outdoor-blocks']); if(_obs.length) rows.push(['Контент макета', `<div style="padding:8px;background:var(--surface);border-radius:8px;border:1px solid var(--border)">${_obs.map(_b=>{ if(_b.type==='image') return _b.url?`<div style="margin-top:6px"><img src="${esc(_b.url)}" style="max-width:100%;border-radius:6px;cursor:pointer" onclick="window.open('${esc(_b.url)}','_blank')"><div style="font-size:11px;color:var(--text-muted);margin-top:3px">${esc(_b.description||'')}</div></div>`:`<div style="font-size:12px;color:var(--text-dim);margin-top:4px">🖼 ${esc(_b.description||'Изображение')}</div>`; const _tl=OUTDOOR_BLOCK_TAGS.find(_t=>_t.id===_b.tag)?.label||_b.tag||''; return `<div style="font-size:12px;color:var(--text-dim);margin-top:4px"><b>${esc(_tl)}</b>${_b.content?' — '+esc(_b.content):''}</div>`; }).join('')}</div>`]); } catch(e){} }
   if (ex['outdoor-matfiles']?.length) rows.push(['Доп. материалы', ex['outdoor-matfiles'].map(f=>`<span style="display:block">📎 ${esc(f)}</span>`).join('')]);
 
   if (ex['landing-reflink']) rows.push(['Ссылка на оригинал', `<a href="${esc(ex['landing-reflink'])}" target="_blank" style="color:var(--accent)">Открыть →</a>`]);
