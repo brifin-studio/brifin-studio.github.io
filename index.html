@@ -859,6 +859,18 @@ const db = getFirestore(initializeApp({
   appId:"1:610491267813:web:3d455c48a7b6722736b20c"
 }));
 
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'Design');
+  const response = await fetch('https://api.cloudinary.com/v1_1/dywtdq1yo/image/upload', {
+    method: 'POST',
+    body: formData
+  });
+  const data = await response.json();
+  return data.secure_url;
+}
+
 // ── CONSTANTS ──
 const DESIGNERS = [];
 
@@ -2135,7 +2147,7 @@ async function submitTask(){
       if(st?.slides?.length) extra['pres-slides-'+sc]=JSON.stringify(st.slides.map(s=>({
         status:s.status,
         blocks:s.blocks.map(b=>b.type==='image'
-          ?{type:'image',description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+          ?{type:'image',description:b.description,url:b.url||null,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
           :{type:'text',content:b.content})
       })));
     });
@@ -2528,7 +2540,7 @@ function buildTZBlock(t) {
   if (parsedSlides?.length) {
     const slidesHtml = parsedSlides.map((s,i) => {
       const blocks = (s.blocks||[]).map(b => {
-        if (b.type==='image') return `<div style="font-size:12px;color:var(--text-dim);margin-top:4px">🖼 ${esc(b.description||'Изображение')}${b.hasFile?' (файл прикреплён)':''}</div>`;
+        if (b.type==='image') return b.url ? `<div style="margin-top:6px"><img src="${esc(b.url)}" style="max-width:100%;border-radius:6px;cursor:pointer" onclick="window.open('${esc(b.url)}','_blank')"><div style="font-size:11px;color:var(--text-muted);margin-top:3px">${esc(b.description||'')}</div></div>` : `<div style="font-size:12px;color:var(--text-dim);margin-top:4px">🖼 ${esc(b.description||'Изображение')}</div>`;
         if (b.type==='text') return `<div style="font-size:12px;color:var(--text-dim);margin-top:4px"><b>${esc(b.tag||'')}</b>${b.content?' — '+esc(b.content):''}</div>`;
         return '';
       }).join('');
@@ -3028,13 +3040,16 @@ function activateImgBlock(system,id1,id2){
 
 function applyImageFile(system,id1,id2,file){
   if(!file||!file.type.startsWith('image/'))return;
-  const reader=new FileReader();
   if(system==='pres'){
     const block=presSlides.find(s=>s.id===id1)?.blocks.find(b=>b.id===id2);
     if(!block)return;
-    block.file=file;
-    reader.onload=e=>{block.fileDataUrl=e.target.result;renderPresEditor();};
-  } else if(system==='landing'){
+    block.uploading=true;
+    renderPresEditor();
+    uploadToCloudinary(file).then(url=>{block.url=url;}).catch(()=>{toast('Ошибка загрузки изображения','err');}).finally(()=>{block.uploading=false;renderPresEditor();});
+    return;
+  }
+  const reader=new FileReader();
+  if(system==='landing'){
     const block=landingSections.find(s=>s.id===id1)?.blocks.find(b=>b.id===id2);
     if(!block)return;
     block.file=file;
@@ -3260,7 +3275,7 @@ function presAddBlock(slideId,type){
   const slide=presSlides.find(s=>s.id===slideId);
   if(!slide)return;
   const block=type==='image'
-    ?{id:'b'+presBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false}
+    ?{id:'b'+presBlockCounter,type:'image',description:'',url:null,uploading:false,annotations:[],annotMode:false}
     :{id:'b'+presBlockCounter,type:'text',content:'',tag:null};
   slide.blocks.push(block);
   renderPresEditor();
@@ -3300,7 +3315,12 @@ function renderPresBlock(slide,block){
   }
   // ── image block ──
   let imgInner;
-  if(block.fileDataUrl){
+  if(block.uploading){
+    imgInner=`<div style="display:flex;align-items:center;gap:9px;padding:14px 12px;background:var(--bg);border:1.5px dashed var(--border);border-radius:var(--rs);color:var(--text-muted);font-size:12px">
+      <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+      Загрузка в облако…
+    </div>`;
+  } else if(block.url){
     const stickers=block.annotations.map(a=>`
       <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
         draggable="true"
@@ -3322,7 +3342,7 @@ function renderPresBlock(slide,block){
         ondragover="presAnnotDragOver(event)"
         ondrop="presAnnotDrop(event,'${sid}','${bid}')"
         onclick="activateImgBlock('pres','${sid}','${bid}')">
-        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <img src="${esc(block.url)}" class="pres-img-preview" alt="">
         <button type="button" class="pres-img-expand-btn" onclick="presOpenFullscreen('${sid}','${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
         <div class="pres-img-stickers">${stickers}</div>
         ${clickzone}
@@ -3401,21 +3421,28 @@ function presToggleSlideStatus(slideId){
   renderPresEditor();
 }
 
-function presImageFileChange(slideId,blockId,input){
+async function presImageFileChange(slideId,blockId,input){
   const file=input.files[0];
   if(!file)return;
   const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
   if(!block)return;
-  block.file=file;
-  const reader=new FileReader();
-  reader.onload=e=>{block.fileDataUrl=e.target.result;renderPresEditor();};
-  reader.readAsDataURL(file);
+  block.uploading=true;
+  renderPresEditor();
+  try{
+    const url=await uploadToCloudinary(file);
+    block.url=url;
+  }catch(e){
+    toast('Ошибка загрузки изображения','err');
+  }finally{
+    block.uploading=false;
+    renderPresEditor();
+  }
 }
 
 function presImageRemoveFile(slideId,blockId){
   const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
   if(!block)return;
-  block.file=null;block.fileDataUrl=null;block.annotations=[];block.annotMode=false;
+  block.url=null;block.uploading=false;block.annotations=[];block.annotMode=false;
   if(presFullscreen&&presFullscreen.slideId===slideId&&presFullscreen.blockId===blockId) presCloseFullscreen();
   renderPresEditor();
 }
@@ -3521,7 +3548,7 @@ function refreshPresFullscreen(){
   if(!presFullscreen)return;
   const {slideId,blockId}=presFullscreen;
   const block=presSlides.find(s=>s.id===slideId)?.blocks.find(b=>b.id===blockId);
-  if(!block||!block.fileDataUrl){presCloseFullscreen();return;}
+  if(!block||!block.url){presCloseFullscreen();return;}
   const inner=document.getElementById('pres-fullscreen-inner');
   if(!inner)return;
   const stickers=block.annotations.map(a=>`
@@ -3536,7 +3563,7 @@ function refreshPresFullscreen(){
       <div class="pres-annot-arrow"></div>
     </div>`).join('');
   inner.innerHTML=`
-    <img src="${block.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <img src="${esc(block.url)}" class="pres-fullscreen-img" alt="">
     <div class="pres-fullscreen-stickers"
       ondragover="presAnnotDragOver(event)"
       ondrop="presAnnotDrop(event,'${slideId}','${blockId}')">
