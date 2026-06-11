@@ -1440,7 +1440,7 @@ let outdoorFullscreen = null;
 let outdoorRefFile = null;
 let outdoorMatFiles = [];
 let outdoorSourceFile = null;
-let outdoorEditMockup = {fileDataUrl:null,file:null,annotations:[],annotMode:false};
+let outdoorEditMockup = {url:null,uploading:false,annotations:[],annotMode:false};
 let outdoorEditAnnotCounter = 0;
 let outdoorSelectedTypes = [];
 let outdoorAdaptSelectedTypes = [];
@@ -2094,7 +2094,7 @@ function resetForm(){
   outdoorScenario=null; outdoorBlocks=[]; outdoorBlockCounter=0; outdoorAnnotCounter=0;
   outdoorSelectedTypes=[]; outdoorAdaptSelectedTypes=[]; outdoorAnimation=false;
   outdoorRefFile=null; outdoorMatFiles=[]; outdoorSourceFile=null;
-  outdoorEditMockup={fileDataUrl:null,file:null,annotations:[],annotMode:false};
+  outdoorEditMockup={url:null,uploading:false,annotations:[],annotMode:false};
   outdoorEditAnnotCounter=0;
   if(outdoorFullscreen) outdoorCloseFullscreen();
   document.getElementById('dyn-fields').innerHTML='';
@@ -2160,7 +2160,7 @@ async function submitTask(){
       if(st?.sections?.length) extra['landing-sections-'+sc]=JSON.stringify(st.sections.map(s=>({
         type:s.type,
         blocks:s.blocks.map(b=>b.type==='image'
-          ?{type:'image',description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+          ?{type:'image',description:b.description,url:b.url||null,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
           :{type:'text',content:b.content})
       })));
     });
@@ -2176,7 +2176,7 @@ async function submitTask(){
     if(outdoorAnimation) extra['outdoor-anim-desc']=document.getElementById('f-anim-desc')?.value||'';
     if(outdoorBlocks.length) extra['outdoor-blocks']=JSON.stringify(outdoorBlocks.map(b=>
       b.type==='image'
-        ?{type:'image',tag:b.tag,description:b.description,hasFile:!!b.file,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
+        ?{type:'image',tag:b.tag,description:b.description,url:b.url||null,annotations:b.annotations.map(a=>({x:a.x,y:a.y,text:a.text}))}
         :{type:'text',tag:b.tag,content:b.content}
     ));
     const or=document.querySelector('#outdoor-new-section:not(.hidden) .outdoor-reflink-input')||document.querySelector('#outdoor-edit-section:not(.hidden) .outdoor-reflink-input');
@@ -2744,13 +2744,12 @@ async function saveTaskModal(){
     if (resultLink !== undefined) resultUpdate['result.link'] = resultLink;
     if (resultFile) {
       if (resultFile.size > 10 * 1024 * 1024) { toast('Файл больше 10 МБ', 'err'); return; }
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        resultUpdate['result.fileUrl'] = e.target.result;
+      try {
+        const url = await uploadToCloudinary(resultFile);
+        resultUpdate['result.fileUrl'] = url;
         resultUpdate['result.fileName'] = resultFile.name;
         await updateDoc(doc(db,'tasks',taskModalId), resultUpdate);
-      };
-      reader.readAsDataURL(resultFile);
+      } catch(e) { toast('Ошибка загрузки файла','err'); return; }
     } else if (Object.keys(resultUpdate).length) {
       await updateDoc(doc(db,'tasks',taskModalId), resultUpdate);
     }
@@ -3048,19 +3047,17 @@ function applyImageFile(system,id1,id2,file){
     uploadToCloudinary(file).then(url=>{block.url=url;}).catch(()=>{toast('Ошибка загрузки изображения','err');}).finally(()=>{block.uploading=false;renderPresEditor();});
     return;
   }
-  const reader=new FileReader();
   if(system==='landing'){
     const block=landingSections.find(s=>s.id===id1)?.blocks.find(b=>b.id===id2);
     if(!block)return;
-    block.file=file;
-    reader.onload=e=>{block.fileDataUrl=e.target.result;renderLandingEditor();};
+    block.uploading=true;renderLandingEditor();
+    uploadToCloudinary(file).then(url=>{block.url=url;}).catch(()=>{toast('Ошибка загрузки изображения','err');}).finally(()=>{block.uploading=false;renderLandingEditor();});
   } else if(system==='outdoor'){
     const block=outdoorBlocks.find(b=>b.id===id2);
     if(!block)return;
-    block.file=file;
-    reader.onload=e=>{block.fileDataUrl=e.target.result;renderOutdoorEditor();};
+    block.uploading=true;renderOutdoorEditor();
+    uploadToCloudinary(file).then(url=>{block.url=url;}).catch(()=>{toast('Ошибка загрузки изображения','err');}).finally(()=>{block.uploading=false;renderOutdoorEditor();});
   }
-  reader.readAsDataURL(file);
 }
 
 function campaignSetRefFile(input){
@@ -3661,7 +3658,7 @@ function landingAddBlock(sectionId,type){
   const section=landingSections.find(s=>s.id===sectionId);
   if(!section)return;
   const block=type==='image'
-    ?{id:'lb'+landingBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false}
+    ?{id:'lb'+landingBlockCounter,type:'image',description:'',url:null,uploading:false,annotations:[],annotMode:false}
     :{id:'lb'+landingBlockCounter,type:'text',content:'',tag:null};
   section.blocks.push(block);
   renderLandingEditor();
@@ -3693,20 +3690,20 @@ function landingUpdateBlockDesc(sectionId,blockId,text){
   if(block)block.description=text;
 }
 
-function landingImageFileChange(sectionId,blockId,input){
+async function landingImageFileChange(sectionId,blockId,input){
   const file=input.files[0];if(!file)return;
   const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
   if(!block)return;
-  block.file=file;
-  const reader=new FileReader();
-  reader.onload=e=>{block.fileDataUrl=e.target.result;renderLandingEditor();};
-  reader.readAsDataURL(file);
+  block.uploading=true;renderLandingEditor();
+  try{const url=await uploadToCloudinary(file);block.url=url;}
+  catch(e){toast('Ошибка загрузки изображения','err');}
+  finally{block.uploading=false;renderLandingEditor();}
 }
 
 function landingImageRemoveFile(sectionId,blockId){
   const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
   if(!block)return;
-  block.file=null;block.fileDataUrl=null;block.annotations=[];block.annotMode=false;
+  block.url=null;block.uploading=false;block.annotations=[];block.annotMode=false;
   if(landingFullscreen&&landingFullscreen.sectionId===sectionId&&landingFullscreen.blockId===blockId) landingCloseFullscreen();
   renderLandingEditor();
 }
@@ -3785,7 +3782,12 @@ function renderLandingBlock(section,block){
     </div>`;
   }
   let imgInner;
-  if(block.fileDataUrl){
+  if(block.uploading){
+    imgInner=`<div style="display:flex;align-items:center;gap:9px;padding:14px 12px;background:var(--bg);border:1.5px dashed var(--border);border-radius:var(--rs);color:var(--text-muted);font-size:12px">
+      <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+      Загрузка в облако…
+    </div>`;
+  } else if(block.url){
     const stickers=block.annotations.map(a=>`
       <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
         draggable="true" ondragstart="landingAnnotDragStart(event,'${sid}','${bid}','${a.id}')">
@@ -3802,7 +3804,7 @@ function renderLandingBlock(section,block){
       :`<button type="button" class="pres-annot-mode-btn" onclick="landingToggleAnnotMode('${sid}','${bid}')">📍 Добавить пометку</button>`;
     imgInner=`
       <div class="pres-img-preview-wrap" ondragover="landingAnnotDragOver(event)" ondrop="landingAnnotDrop(event,'${sid}','${bid}')" onclick="activateImgBlock('landing','${sid}','${bid}')">
-        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <img src="${esc(block.url)}" class="pres-img-preview" alt="">
         <button type="button" class="pres-img-expand-btn" onclick="landingOpenFullscreen('${sid}','${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
         <div class="pres-img-stickers">${stickers}</div>
         ${clickzone}
@@ -3923,7 +3925,7 @@ function refreshLandingFullscreen(){
   if(!landingFullscreen)return;
   const {sectionId,blockId}=landingFullscreen;
   const block=landingSections.find(s=>s.id===sectionId)?.blocks.find(b=>b.id===blockId);
-  if(!block||!block.fileDataUrl){landingCloseFullscreen();return;}
+  if(!block||!block.url){landingCloseFullscreen();return;}
   const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
   const stickers=block.annotations.map(a=>`
     <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
@@ -3936,7 +3938,7 @@ function refreshLandingFullscreen(){
       <div class="pres-annot-arrow"></div>
     </div>`).join('');
   inner.innerHTML=`
-    <img src="${block.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <img src="${esc(block.url)}" class="pres-fullscreen-img" alt="">
     <div class="pres-fullscreen-stickers" ondragover="landingAnnotDragOver(event)" ondrop="landingAnnotDrop(event,'${sectionId}','${blockId}')">${stickers}</div>
     <div class="pres-fullscreen-clickzone" onclick="landingFullscreenClick(event,'${sectionId}','${blockId}')"></div>`;
 }
@@ -4005,7 +4007,7 @@ function outdoorSetAnimation(val){
 function outdoorAddBlock(type){
   outdoorBlockCounter++;
   const block=type==='image'
-    ?{id:'ob'+outdoorBlockCounter,type:'image',description:'',file:null,fileDataUrl:null,annotations:[],annotMode:false,tag:null}
+    ?{id:'ob'+outdoorBlockCounter,type:'image',description:'',url:null,uploading:false,annotations:[],annotMode:false,tag:null}
     :{id:'ob'+outdoorBlockCounter,type:'text',content:'',tag:null};
   outdoorBlocks.push(block);
   renderOutdoorEditor();
@@ -4024,17 +4026,17 @@ function outdoorSetBlockTag(blockId,tag){
 function outdoorUpdateBlockDesc(blockId,text){
   const b=outdoorBlocks.find(b=>b.id===blockId);if(b)b.description=text;
 }
-function outdoorImageFileChange(blockId,input){
+async function outdoorImageFileChange(blockId,input){
   const file=input.files[0];if(!file)return;
   const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
-  b.file=file;
-  const reader=new FileReader();
-  reader.onload=e=>{b.fileDataUrl=e.target.result;renderOutdoorEditor();};
-  reader.readAsDataURL(file);
+  b.uploading=true;renderOutdoorEditor();
+  try{const url=await uploadToCloudinary(file);b.url=url;}
+  catch(e){toast('Ошибка загрузки изображения','err');}
+  finally{b.uploading=false;renderOutdoorEditor();}
 }
 function outdoorImageRemoveFile(blockId){
   const b=outdoorBlocks.find(b=>b.id===blockId);if(!b)return;
-  b.file=null;b.fileDataUrl=null;b.annotations=[];b.annotMode=false;
+  b.url=null;b.uploading=false;b.annotations=[];b.annotMode=false;
   if(outdoorFullscreen&&outdoorFullscreen.blockId===blockId) outdoorCloseFullscreen();
   renderOutdoorEditor();
 }
@@ -4086,7 +4088,15 @@ function renderOutdoorBlock(block,idx){
     contentHtml=`<div class="pres-block-content" contenteditable="true"
       data-placeholder="${esc(ph)}"
       onblur="outdoorUpdateBlock('${bid}',this.textContent)">${esc(block.content)}</div>`;
-  } else if(block.fileDataUrl){
+  } else if(block.uploading){
+    contentHtml=`
+      <input type="text" class="pres-img-desc" placeholder="Описание…"
+        value="${esc(block.description)}" onchange="outdoorUpdateBlockDesc('${bid}',this.value)">
+      <div style="display:flex;align-items:center;gap:9px;padding:14px 12px;background:var(--bg);border:1.5px dashed var(--border);border-radius:var(--rs);color:var(--text-muted);font-size:12px">
+        <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+        Загрузка в облако…
+      </div>`;
+  } else if(block.url){
     const stickers=block.annotations.map(a=>`
       <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
         draggable="true" ondragstart="outdoorAnnotDragStart(event,'${bid}','${a.id}')">
@@ -4105,7 +4115,7 @@ function renderOutdoorBlock(block,idx){
       <input type="text" class="pres-img-desc" placeholder="Описание…"
         value="${esc(block.description)}" onchange="outdoorUpdateBlockDesc('${bid}',this.value)">
       <div class="pres-img-preview-wrap" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorAnnotDrop(event,'${bid}')" onclick="activateImgBlock('outdoor',null,'${bid}')">
-        <img src="${block.fileDataUrl}" class="pres-img-preview" alt="">
+        <img src="${esc(block.url)}" class="pres-img-preview" alt="">
         <button type="button" class="pres-img-expand-btn" onclick="outdoorOpenFullscreen('${bid}')" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
         <div class="pres-img-stickers">${stickers}</div>
         ${clickzone}
@@ -4201,7 +4211,7 @@ function refreshOutdoorFullscreen(){
   if(outdoorFullscreen.type==='editMockup'){_refreshOutdoorEditMockupFullscreen();return;}
   const {blockId}=outdoorFullscreen;
   const b=outdoorBlocks.find(b=>b.id===blockId);
-  if(!b||!b.fileDataUrl){outdoorCloseFullscreen();return;}
+  if(!b||!b.url){outdoorCloseFullscreen();return;}
   const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
   const stickers=b.annotations.map(a=>`
     <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
@@ -4214,7 +4224,7 @@ function refreshOutdoorFullscreen(){
       <div class="pres-annot-arrow"></div>
     </div>`).join('');
   inner.innerHTML=`
-    <img src="${b.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <img src="${esc(b.url)}" class="pres-fullscreen-img" alt="">
     <div class="pres-fullscreen-stickers" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorAnnotDrop(event,'${blockId}')">${stickers}</div>
     <div class="pres-fullscreen-clickzone" onclick="outdoorFullscreenClick(event,'${blockId}')"></div>`;
 }
@@ -4222,7 +4232,14 @@ function refreshOutdoorFullscreen(){
 // ── OUTDOOR EDIT MOCKUP ──
 function renderOutdoorEditMockup(){
   const c=document.getElementById('outdoor-edit-mockup-container');if(!c)return;
-  if(!outdoorEditMockup.fileDataUrl){
+  if(outdoorEditMockup.uploading){
+    c.innerHTML=`<div style="display:flex;align-items:center;gap:9px;padding:14px 12px;background:var(--bg);border:1.5px dashed var(--border);border-radius:var(--rs);color:var(--text-muted);font-size:12px">
+      <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+      Загрузка в облако…
+    </div>`;
+    return;
+  }
+  if(!outdoorEditMockup.url){
     c.innerHTML=`<label class="pres-file-btn" style="display:inline-flex">
       <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="outdoorEditMockupFileChange(this)">
       📁 Загрузить макет
@@ -4248,7 +4265,7 @@ function renderOutdoorEditMockup(){
     <div class="pres-img-preview-wrap"
       ondragover="outdoorAnnotDragOver(event)"
       ondrop="outdoorEditMockupAnnotDrop(event)">
-      <img src="${outdoorEditMockup.fileDataUrl}" class="pres-img-preview" alt="">
+      <img src="${esc(outdoorEditMockup.url)}" class="pres-img-preview" alt="">
       <button type="button" class="pres-img-expand-btn" onclick="outdoorEditMockupOpenFullscreen()" title="Развернуть"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8,1 12,1 12,5"/><polyline points="5,12 1,12 1,8"/><line x1="12" y1="1" x2="7.5" y2="5.5"/><line x1="1" y1="12" x2="5.5" y2="7.5"/></svg></button>
       <div class="pres-img-stickers">${stickers}</div>
       ${clickzone}
@@ -4259,15 +4276,15 @@ function renderOutdoorEditMockup(){
     </div>`;
 }
 
-function outdoorEditMockupFileChange(input){
+async function outdoorEditMockupFileChange(input){
   const file=input.files[0];if(!file)return;
-  outdoorEditMockup.file=file;
-  const reader=new FileReader();
-  reader.onload=e=>{outdoorEditMockup.fileDataUrl=e.target.result;renderOutdoorEditMockup();};
-  reader.readAsDataURL(file);
+  outdoorEditMockup.uploading=true;renderOutdoorEditMockup();
+  try{const url=await uploadToCloudinary(file);outdoorEditMockup.url=url;}
+  catch(e){toast('Ошибка загрузки изображения','err');}
+  finally{outdoorEditMockup.uploading=false;renderOutdoorEditMockup();}
 }
 function outdoorEditMockupRemove(){
-  outdoorEditMockup={fileDataUrl:null,file:null,annotations:[],annotMode:false};
+  outdoorEditMockup={url:null,uploading:false,annotations:[],annotMode:false};
   if(outdoorFullscreen?.type==='editMockup') outdoorCloseFullscreen();
   renderOutdoorEditMockup();
 }
@@ -4319,7 +4336,7 @@ function outdoorEditMockupFullscreenClick(e){
 }
 function _refreshOutdoorEditMockupFullscreen(){
   if(outdoorFullscreen?.type!=='editMockup')return;
-  if(!outdoorEditMockup.fileDataUrl){outdoorCloseFullscreen();return;}
+  if(!outdoorEditMockup.url){outdoorCloseFullscreen();return;}
   const inner=document.getElementById('pres-fullscreen-inner');if(!inner)return;
   const stickers=outdoorEditMockup.annotations.map(a=>`
     <div class="pres-annot" style="left:${a.x.toFixed(1)}%;top:${a.y.toFixed(1)}%"
@@ -4332,7 +4349,7 @@ function _refreshOutdoorEditMockupFullscreen(){
       <div class="pres-annot-arrow"></div>
     </div>`).join('');
   inner.innerHTML=`
-    <img src="${outdoorEditMockup.fileDataUrl}" class="pres-fullscreen-img" alt="">
+    <img src="${esc(outdoorEditMockup.url)}" class="pres-fullscreen-img" alt="">
     <div class="pres-fullscreen-stickers" ondragover="outdoorAnnotDragOver(event)" ondrop="outdoorEditMockupAnnotDrop(event)">${stickers}</div>
     <div class="pres-fullscreen-clickzone" onclick="outdoorEditMockupFullscreenClick(event)"></div>`;
 }
