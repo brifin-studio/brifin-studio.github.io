@@ -2958,11 +2958,10 @@ function openTaskModal(id){
   document.getElementById('tm-footer').innerHTML=canEdit
     ?`<button class="tm-btn-primary" onclick="saveTaskModal()">Сохранить</button>
       <button class="tm-btn-ghost" onclick="closeTaskModal()">Закрыть</button>
-      ${user.name===t.clientName?`
-        <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
-          <button class="tm-btn-ghost" style="padding:8px 14px;font-size:13px" onclick="openTaskEdit(event,'${id}')">✏️ Полное редактирование</button>
-          <button class="tm-btn-archive" onclick="archiveTask()">✕ Закрыть задачу</button>
-        </span>`:''}`.trim()
+      <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        ${user.name===t.clientName?`<button class="tm-btn-ghost" style="padding:8px 14px;font-size:13px" onclick="openTaskEdit(event,'${id}')">✏️ Полное редактирование</button>`:''}
+        <button class="tm-btn-archive" onclick="archiveTask()">✕ Закрыть задачу</button>
+      </span>`.trim()
     :`<button class="tm-btn-ghost" style="margin-left:auto" onclick="closeTaskModal()">Закрыть</button>`;
 
   document.getElementById('task-modal').classList.remove('hidden');
