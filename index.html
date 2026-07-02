@@ -53,23 +53,28 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 .btn-sm{padding:6px 14px;font-size:12px}
 
 /* ── LOGIN ── */
-#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#f8f9fa 0%,#e8f0fe 45%,#fce8e6 100%);position:relative}
-.logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:10px}
+#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 24px 64px;background:linear-gradient(180deg,#f5f4ff 0%,#ece7ff 28%,#d5c8ff 52%,#9d8df5 74%,#6478f0 90%,#5b8ef5 100%);position:relative;overflow:hidden}
+.login-blob{position:absolute;border-radius:50%;pointer-events:none}
+.login-blob-1{width:520px;height:520px;background:radial-gradient(circle,rgba(167,139,250,.55) 0%,transparent 70%);bottom:-160px;left:-140px;filter:blur(72px)}
+.login-blob-2{width:380px;height:380px;background:radial-gradient(circle,rgba(99,120,245,.5) 0%,transparent 70%);top:-100px;right:-100px;filter:blur(64px)}
+.login-blob-3{width:220px;height:220px;background:radial-gradient(circle,rgba(96,165,250,.55) 0%,transparent 70%);bottom:28%;right:6%;filter:blur(50px)}
+.login-blob-4{width:160px;height:160px;background:radial-gradient(circle,rgba(192,160,255,.6) 0%,transparent 70%);top:20%;left:5%;filter:blur(44px)}
+.logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:12px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:10px}
 .logo span{color:var(--accent)}
-.logo-sub{color:var(--text-dim);font-size:14px;margin-bottom:40px;text-align:center;max-width:380px;line-height:1.6}
+.logo-sub{color:#6b6a7a;font-size:14px;margin-bottom:36px;text-align:center;max-width:380px;line-height:1.6}
 
-/* designer corner btn */
-.designer-corner-btn{position:absolute;top:20px;left:20px;display:flex;align-items:center;gap:7px;padding:11px 16px;background:var(--card);border:1px solid var(--border);border-radius:100px;font-size:13px;color:var(--text-dim);cursor:pointer;transition:all .18s;box-shadow:var(--sh)}
-.designer-corner-btn:hover{border-color:var(--accent);color:var(--accent);box-shadow:var(--sh-md)}
+/* designer btn — below card, glass style */
+.designer-corner-btn{position:static;display:flex;align-items:center;gap:7px;padding:12px 22px;background:rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.45);border-radius:100px;font-size:13px;font-weight:500;color:rgba(255,255,255,.95);cursor:pointer;transition:all .2s;box-shadow:0 2px 16px rgba(0,0,0,.12);margin-top:20px}
+.designer-corner-btn:hover{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.65);color:#fff;transform:translateY(-1px)}
 .designer-corner-btn .dc-icon{font-size:15px}
 
 /* client card */
-.client-entry-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:40px 48px;text-align:center;cursor:pointer;transition:all .22s;box-shadow:var(--sh);max-width:320px;width:100%;animation:fadeUp .2s ease}
-.client-entry-card:hover{border-color:var(--accent);box-shadow:var(--sh-md);transform:translateY(-3px)}
+.client-entry-card{background:#fff;border:none;border-radius:20px;padding:40px 44px;text-align:center;cursor:pointer;transition:all .25s;box-shadow:0 16px 48px rgba(60,40,160,.2),0 4px 16px rgba(0,0,0,.1);max-width:320px;width:100%;animation:fadeUp .25s ease;position:relative;z-index:1}
+.client-entry-card:hover{box-shadow:0 24px 64px rgba(60,40,160,.28),0 6px 20px rgba(0,0,0,.12);transform:translateY(-4px)}
 .client-entry-card .ce-icon{width:64px;height:64px;border-radius:50%;background:var(--accent-lt);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
 .client-entry-card h2{font-size:20px;font-weight:700;color:var(--text);margin:0 0 6px}
 .client-entry-card p{font-size:13px;color:var(--text-dim);margin:0 0 24px;line-height:1.5}
-.client-entry-card .ce-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600}
+.client-entry-card .ce-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:10px;padding:11px 26px;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(91,76,245,.35)}
 
 /* client name modal */
 .name-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeIn .15s ease}
@@ -675,10 +680,11 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 
 <!-- ═══════════════ LOGIN ═══════════════ -->
 <div id="login">
-  <!-- Designer corner button -->
-  <button class="designer-corner-btn" onclick="openDesignerAuth()">
-    <span class="dc-icon">🎨</span> Дизайнер
-  </button>
+  <!-- decorative blobs -->
+  <div class="login-blob login-blob-1"></div>
+  <div class="login-blob login-blob-2"></div>
+  <div class="login-blob login-blob-3"></div>
+  <div class="login-blob login-blob-4"></div>
 
   <div class="logo"><img src="Logobrifin.svg" alt="БРИФin" style="height:96px;width:auto;display:block"></div>
   <div class="logo-sub">Создайте задачу — дизайнеры возьмут в работу</div>
@@ -689,6 +695,11 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
     <p>Создайте ТЗ для дизайнера — укажите формат, сроки и детали</p>
     <div class="ce-btn">Начать →</div>
   </div>
+
+  <!-- Designer button — below card -->
+  <button class="designer-corner-btn" onclick="openDesignerAuth()">
+    <span class="dc-icon">🎨</span> Войти как дизайнер
+  </button>
 </div>
 
 <!-- Client name modal -->
