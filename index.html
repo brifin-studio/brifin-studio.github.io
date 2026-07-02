@@ -68,9 +68,14 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 .client-entry-card:hover{box-shadow:0 20px 64px rgba(91,76,245,.22),0 4px 16px rgba(0,0,0,.08);transform:translateY(-4px)}
 .ce-card-header{background:linear-gradient(145deg,#4a38d6 0%,#5B4CF5 55%,#6b79ef 100%);padding:36px 36px 30px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .ce-card-header img{filter:brightness(0) invert(1)}
-.ce-card-header-sub{color:rgba(255,255,255,.7);font-size:13px;line-height:1.5}
+.ce-card-header-sub{color:rgba(255,255,255,.88);font-size:13px;line-height:1.5}
 .ce-card-body{padding:28px 36px 32px}
-.client-entry-card .ce-icon{width:52px;height:52px;border-radius:50%;background:var(--accent-lt);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px}
+.client-entry-card .ce-icon{width:52px;height:52px;border-radius:50%;background:var(--accent-lt);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.client-entry-card .ce-icon svg{width:24px;height:24px;color:var(--accent)}
+/* login above/below content */
+.login-headline{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.025em;margin-bottom:24px;text-align:center;line-height:1.25}
+.login-features{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+.login-feat{font-size:12px;font-weight:500;color:#5a5470;background:rgba(255,255,255,.65);border:1px solid rgba(91,76,245,.14);border-radius:100px;padding:6px 14px}
 .client-entry-card h2{font-size:19px;font-weight:700;color:var(--text);margin:0 0 6px}
 .client-entry-card p{font-size:13px;color:var(--text-dim);margin:0 0 22px;line-height:1.5}
 .client-entry-card .ce-btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(91,76,245,.35)}
@@ -679,13 +684,17 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 
 <!-- ═══════════════ LOGIN ═══════════════ -->
 <div id="login">
+  <div class="login-headline">Дизайн для вашего бизнеса</div>
+
   <div class="client-entry-card" onclick="openClientEntry()">
     <div class="ce-card-header">
       <img src="Logobrifin.svg" alt="БРИФin" style="height:72px;width:auto;display:block">
       <div class="ce-card-header-sub">Создайте задачу — дизайнеры возьмут в работу</div>
     </div>
     <div class="ce-card-body">
-      <div class="ce-icon">📋</div>
+      <div class="ce-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      </div>
       <h2>Поставить задачу</h2>
       <p>Создайте ТЗ для дизайнера — укажите формат, сроки и детали</p>
       <div class="ce-btn">Начать →</div>
@@ -693,8 +702,15 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
   </div>
 
   <button class="designer-corner-btn" onclick="openDesignerAuth()">
-    <span class="dc-icon">🎨</span> Войти как дизайнер
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+    Войти как дизайнер
   </button>
+
+  <div class="login-features">
+    <span class="login-feat">Быстрый отклик</span>
+    <span class="login-feat">Удалённо</span>
+    <span class="login-feat">Фиксированная цена</span>
+  </div>
 </div>
 
 <!-- Client name modal -->
