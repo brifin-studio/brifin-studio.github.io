@@ -116,6 +116,8 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 .dino-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
 .dino-opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;font-size:22px}
 .dino-opt span{font-size:12px;color:var(--text-muted)}
+.dino-opt svg{width:36px;height:40px;flex-shrink:0}
+.profile-photo-circle svg{width:44px;height:44px}
 .dino-opt:hover{border-color:var(--accent);background:var(--accent-lt)}
 .dino-opt.active{border-color:var(--accent);background:var(--accent-lt)}
 .dino-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -1939,16 +1941,28 @@ const DESIGNER_COLORS = [
   {color:'#00897b',name:'Бирюзовый'},
 ];
 
+function penguinSVG(acc=''){
+  return `<svg viewBox="0 0 40 44" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="28" rx="11" ry="13" fill="#312e81"/><ellipse cx="20" cy="30" rx="6.5" ry="9" fill="#ede9fe"/><ellipse cx="9.5" cy="26" rx="3" ry="6" fill="#312e81" transform="rotate(-20 9.5 26)"/><ellipse cx="30.5" cy="26" rx="3" ry="6" fill="#312e81" transform="rotate(20 30.5 26)"/><circle cx="20" cy="14" r="9" fill="#312e81"/><circle cx="16.5" cy="12" r="2.5" fill="white"/><circle cx="17" cy="12.3" r="1.3" fill="#312e81"/><circle cx="23.5" cy="12" r="2.5" fill="white"/><circle cx="24" cy="12.3" r="1.3" fill="#312e81"/><path d="M18.5 16.5L20 19.5L21.5 16.5Z" fill="#f59e0b"/><ellipse cx="15" cy="42" rx="4" ry="1.5" fill="#f59e0b"/><ellipse cx="25" cy="42" rx="4" ry="1.5" fill="#f59e0b"/>${acc}</svg>`;
+}
 const DINOS = [
-  {id:'brax',  emoji:'🐧', name:'Классик',     tileColor:'#edeaff'},
-  {id:'rex',   emoji:'🐧', name:'Художник',     tileColor:'#e0f2fe'},
-  {id:'dragon',emoji:'🐧', name:'Дизайнер',     tileColor:'#fce7f3'},
-  {id:'raptor',emoji:'🐧', name:'Директор',     tileColor:'#dcfce7'},
-  {id:'croc',  emoji:'🐧', name:'Верстальщик',  tileColor:'#fef9c3'},
-  {id:'trex',  emoji:'🐧', name:'Иллюстратор',  tileColor:'#ffe4e6'},
-  {id:'stego', emoji:'🐧', name:'Аниматор',     tileColor:'#f3e8ff'},
-  {id:'ptero', emoji:'🐧', name:'Стратег',      tileColor:'#e0f2f1'},
-  {id:'anky',  emoji:'🐧', name:'Новичок',      tileColor:'#fff7ed'},
+  {id:'brax',  emoji:'🐧', name:'Классик',     tileColor:'#edeaff',
+   svg:penguinSVG('')},
+  {id:'rex',   emoji:'🐧', name:'Художник',     tileColor:'#e0f2fe',
+   svg:penguinSVG('<ellipse cx="21" cy="5.5" rx="9" ry="3.5" fill="#7c3aed" transform="rotate(-10 21 5.5)"/><circle cx="27" cy="3.5" r="2" fill="#7c3aed"/>')},
+  {id:'dragon',emoji:'🐧', name:'Дизайнер',     tileColor:'#fce7f3',
+   svg:penguinSVG('<circle cx="16" cy="12" r="3.5" fill="none" stroke="#f59e0b" stroke-width="1.4"/><circle cx="24" cy="12" r="3.5" fill="none" stroke="#f59e0b" stroke-width="1.4"/><line x1="19.5" y1="12" x2="20.5" y2="12" stroke="#f59e0b" stroke-width="1.4"/>')},
+  {id:'raptor',emoji:'🐧', name:'Директор',     tileColor:'#dcfce7',
+   svg:penguinSVG('<path d="M13 21L19 23L13 25Z" fill="#ef4444"/><path d="M27 21L21 23L27 25Z" fill="#ef4444"/><circle cx="20" cy="23" r="2" fill="#dc2626"/>')},
+  {id:'croc',  emoji:'🐧', name:'Верстальщик',  tileColor:'#fef9c3',
+   svg:penguinSVG('<path d="M10 14Q10 2 20 2Q30 2 30 14" stroke="#5B4CF5" stroke-width="2.5" fill="none"/><rect x="7" y="11" width="5" height="7" rx="2.5" fill="#5B4CF5"/><rect x="28" y="11" width="5" height="7" rx="2.5" fill="#5B4CF5"/>')},
+  {id:'trex',  emoji:'🐧', name:'Иллюстратор',  tileColor:'#ffe4e6',
+   svg:penguinSVG('<line x1="27" y1="23" x2="34" y2="32" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="33" r="2" fill="#92400e"/>')},
+  {id:'stego', emoji:'🐧', name:'Аниматор',     tileColor:'#f3e8ff',
+   svg:penguinSVG('<path d="M34 4L35.5 8L39 9L35.5 10L34 14L32.5 10L29 9L32.5 8Z" fill="#fbbf24"/><circle cx="5" cy="8" r="1.5" fill="#fbbf24" opacity=".7"/><circle cx="8" cy="4" r="1" fill="#fbbf24" opacity=".7"/>')},
+  {id:'ptero', emoji:'🐧', name:'Стратег',      tileColor:'#e0f2f1',
+   svg:penguinSVG('<circle cx="23.5" cy="12" r="4.2" fill="none" stroke="#8b5cf6" stroke-width="1.5"/><line x1="27" y1="15.5" x2="30" y2="18.5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>')},
+  {id:'anky',  emoji:'🐧', name:'Новичок',      tileColor:'#fff7ed',
+   svg:penguinSVG('<rect x="9" y="5" width="22" height="2.5" rx="0.5" fill="#4338ca"/><line x1="29.5" y1="5" x2="31" y2="13" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/><circle cx="31" cy="14" r="2" fill="#fbbf24"/>')},
 ];
 
 function openClientEntry(){
@@ -2138,7 +2152,7 @@ function renderDinoGrid(containerId, ctx){
   const selectedId = ctx==='dauth' ? dAuthSelectedDino : peSelectedDino;
   container.innerHTML = DINOS.map(d=>`
     <div class="dino-opt${selectedId===d.id?' active':''}" style="background:${selectedId===d.id?'var(--accent-lt)':d.tileColor}" onclick="${ctx==='dauth'?'dAuthSelectDino':'peSelectDino'}('${d.id}')">
-      ${d.emoji}<span>${d.name}</span>
+      ${d.svg||d.emoji}<span>${d.name}</span>
     </div>`).join('');
 }
 
@@ -2150,7 +2164,7 @@ function dAuthSelectDino(id){
 function peSelectDino(id){
   peSelectedDino = id;
   const dino = DINOS.find(d=>d.id===id);
-  document.getElementById('pe-photo-circle').textContent = dino.emoji;
+  document.getElementById('pe-photo-circle').innerHTML = dino.svg || dino.emoji;
   renderDinoGrid('pe-dino-grid','pe');
 }
 
@@ -2289,7 +2303,7 @@ function openProfileEdit(){
   peSelectedDino = user.dino || null;
   const dinoObj = DINOS.find(d=>d.id===user.dino);
   const circle = document.getElementById('pe-photo-circle');
-  circle.textContent = dinoObj ? dinoObj.emoji : '🐧';
+  circle.innerHTML = dinoObj ? (dinoObj.svg || dinoObj.emoji) : penguinSVG();
   circle.style.background = (user.color||'#4285f4')+'22';
   renderDinoGrid('pe-dino-grid','pe');
   document.getElementById('pe-name-input').value=user.displayName||user.name;
