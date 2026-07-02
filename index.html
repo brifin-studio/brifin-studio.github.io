@@ -952,15 +952,18 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, setDoc, query, orderBy, serverTimestamp, getDoc, getDocs, increment }
   from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
 
-const db = getFirestore(initializeApp({
+const app = initializeApp({
   apiKey:"AIzaSyCX5Dn4Fy2jmAq8E_UXf_K_DsCGMONxcGw",
   authDomain:"designer-tasks.firebaseapp.com",
   projectId:"designer-tasks",
   storageBucket:"designer-tasks.firebasestorage.app",
   messagingSenderId:"610491267813",
   appId:"1:610491267813:web:3d455c48a7b6722736b20c"
-}));
+});
+const db = getFirestore(app);
+signInAnonymously(getAuth(app));
 
 async function uploadToCloudinary(file) {
   const formData = new FormData();
