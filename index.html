@@ -258,7 +258,7 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 @keyframes slideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-10px)}}
 .kanban-entering{animation:slideIn .2s ease forwards}
 .kanban-leaving{animation:slideOut .15s ease forwards}
-.kcol{background:#fff;border-radius:14px;display:flex;flex-direction:column;min-width:220px;overflow:visible;border:1px solid rgba(91,76,245,.1);box-shadow:0 2px 12px rgba(91,76,245,.06)}
+.kcol{background:#fff;border-radius:14px;display:flex;flex-direction:column;min-width:220px;overflow:hidden;border:1px solid rgba(91,76,245,.1);box-shadow:0 2px 12px rgba(91,76,245,.06)}
 .kcol-topbar{height:4px;flex-shrink:0;border-radius:14px 14px 0 0}
 .kcol.drag-over{outline:2px dashed var(--accent);outline-offset:-2px;background:var(--accent-lt)}
 .kcol-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;flex-shrink:0;position:relative;border-radius:14px 14px 0 0;overflow:hidden}
@@ -804,9 +804,9 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
     <button class="modal-close-btn" onclick="closeProfileEdit()">✕</button>
     <h3>Редактировать профиль</h3>
     <div class="profile-photo-row">
-      <div class="profile-photo-circle" id="pe-photo-circle" style="background:var(--accent-lt)">🦕</div>
+      <div class="profile-photo-circle" id="pe-photo-circle" style="background:var(--accent-lt)">🐧</div>
       <div>
-        <div style="font-size:13px;font-weight:600;color:var(--text)">Твой динозавр</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Твой пингвин</div>
         <div class="profile-photo-hint">Выбери ниже чтобы сменить</div>
       </div>
     </div>
@@ -1940,15 +1940,15 @@ const DESIGNER_COLORS = [
 ];
 
 const DINOS = [
-  {id:'brax',  emoji:'🦕', name:'Брахиозавр'},
-  {id:'rex',   emoji:'🦖', name:'Тираннозавр'},
-  {id:'dragon',emoji:'🐉', name:'Дракон'},
-  {id:'raptor',emoji:'🦎', name:'Раптор'},
-  {id:'croc',  emoji:'🐊', name:'Спинозавр'},
-  {id:'trex',  emoji:'🦷', name:'Трицератопс'},
-  {id:'stego', emoji:'🌿', name:'Стегозавр'},
-  {id:'ptero', emoji:'🦅', name:'Птеродактиль'},
-  {id:'anky',  emoji:'🛡️', name:'Анкилозавр'},
+  {id:'brax',  emoji:'🐧', name:'Классик',     tileColor:'#edeaff'},
+  {id:'rex',   emoji:'🐧', name:'Художник',     tileColor:'#e0f2fe'},
+  {id:'dragon',emoji:'🐧', name:'Дизайнер',     tileColor:'#fce7f3'},
+  {id:'raptor',emoji:'🐧', name:'Директор',     tileColor:'#dcfce7'},
+  {id:'croc',  emoji:'🐧', name:'Верстальщик',  tileColor:'#fef9c3'},
+  {id:'trex',  emoji:'🐧', name:'Иллюстратор',  tileColor:'#ffe4e6'},
+  {id:'stego', emoji:'🐧', name:'Аниматор',     tileColor:'#f3e8ff'},
+  {id:'ptero', emoji:'🐧', name:'Стратег',      tileColor:'#e0f2f1'},
+  {id:'anky',  emoji:'🐧', name:'Новичок',      tileColor:'#fff7ed'},
 ];
 
 function openClientEntry(){
@@ -2137,7 +2137,7 @@ function renderDinoGrid(containerId, ctx){
   const container = document.getElementById(containerId);
   const selectedId = ctx==='dauth' ? dAuthSelectedDino : peSelectedDino;
   container.innerHTML = DINOS.map(d=>`
-    <div class="dino-opt${selectedId===d.id?' active':''}" onclick="${ctx==='dauth'?'dAuthSelectDino':'peSelectDino'}('${d.id}')">
+    <div class="dino-opt${selectedId===d.id?' active':''}" style="background:${selectedId===d.id?'var(--accent-lt)':d.tileColor}" onclick="${ctx==='dauth'?'dAuthSelectDino':'peSelectDino'}('${d.id}')">
       ${d.emoji}<span>${d.name}</span>
     </div>`).join('');
 }
@@ -2202,7 +2202,7 @@ function showDesigner(){
   const color=user.color||'#4285f4';
   const displayName=user.displayName||user.name;
   const dinoObj=DINOS.find(d=>d.id===user.dino);
-  const dinoEmoji=dinoObj?dinoObj.emoji:'🦕';
+  const dinoEmoji=dinoObj?dinoObj.emoji:'🐧';
   const av=document.getElementById('d-av');
   av.innerHTML=`<span style="font-size:18px">${dinoEmoji}</span>`;
   av.style.background=color+'22';
@@ -2289,7 +2289,7 @@ function openProfileEdit(){
   peSelectedDino = user.dino || null;
   const dinoObj = DINOS.find(d=>d.id===user.dino);
   const circle = document.getElementById('pe-photo-circle');
-  circle.textContent = dinoObj ? dinoObj.emoji : '🦕';
+  circle.textContent = dinoObj ? dinoObj.emoji : '🐧';
   circle.style.background = (user.color||'#4285f4')+'22';
   renderDinoGrid('pe-dino-grid','pe');
   document.getElementById('pe-name-input').value=user.displayName||user.name;
@@ -2331,7 +2331,7 @@ async function saveProfileEdit(){
   // Update sidebar avatar
   const av=document.getElementById('d-av');
   const dinoObj=DINOS.find(d=>d.id===dino);
-  av.innerHTML=`<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🦕'}</span>`;
+  av.innerHTML=`<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🐧'}</span>`;
   av.style.background=color+'22';
   av.style.borderColor=color;
   document.getElementById('d-nm').textContent=newName;
@@ -2707,8 +2707,8 @@ function getDesignerColor(name){
 function getDesignerDino(name){
   // Try to find from allDesigners firebase data first, fallback to default
   const d=allDesigners.find(x=>x.name===name);
-  if(d&&d.dino){ const obj=DINOS.find(x=>x.id===d.dino); return obj?obj.emoji:'🦕'; }
-  return '🦕';
+  if(d&&d.dino){ const obj=DINOS.find(x=>x.id===d.dino); return obj?obj.emoji:'🐧'; }
+  return '🐧';
 }
 
 function hexToRgba(hex,alpha){
@@ -2866,7 +2866,7 @@ function subscribeDesigners(){
         if(me.dino) user.dino=me.dino;
         const av=document.getElementById('d-av');
         const dinoObj=DINOS.find(d=>d.id===user.dino);
-        av.innerHTML=`<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🦕'}</span>`;
+        av.innerHTML=`<span style="font-size:18px">${dinoObj?dinoObj.emoji:'🐧'}</span>`;
         av.style.background=me.color+'22';
         av.style.borderColor=me.color;
       }
