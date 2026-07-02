@@ -359,7 +359,8 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 .tz-section-name{font-size:13px;font-weight:600;color:var(--text)}
 .tz-section-desc{font-size:12px;color:var(--text-dim)}
 .tm-sidebar{padding:20px;display:flex;flex-direction:column;overflow:hidden;min-height:0;background:var(--surface);border:1px solid var(--border-secondary);border-radius:var(--r-xl);margin:16px 16px 16px 0}
-.tm-sidebar-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;flex-shrink:0}
+.tm-sidebar-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.tm-activity-chevron{display:none;font-size:10px;color:var(--text-muted);transition:transform .2s;line-height:1}
 .tm-activity-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:0}
 .tm-activity-empty{text-align:center;font-size:13px;color:var(--text-muted);padding:24px 0}
 .tm-activity-event{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:12px}
@@ -574,6 +575,17 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
   .tm-footer>span{margin-left:0!important;width:100%;display:flex;gap:8px;flex-wrap:wrap}
   .tm-btn-primary,.tm-btn-ghost{flex:1;justify-content:center;min-width:0;padding:10px 12px}
   .tm-btn-archive{width:100%;justify-content:center;padding:10px}
+  /* activity collapsible on mobile */
+  .tm-activity-chevron{display:block}
+  .tm-sidebar{cursor:pointer}
+  #tm-activity-feed,
+  .tm-comment-input-wrap{display:none}
+  .tm-sidebar.mob-expanded #tm-activity-feed,
+  .tm-sidebar.mob-expanded .tm-comment-input-wrap{display:flex}
+  .tm-sidebar.mob-expanded #tm-activity-feed{display:block}
+  .tm-sidebar.mob-expanded .tm-sidebar-title{margin-bottom:12px}
+  .tm-sidebar.mob-expanded .tm-activity-chevron{transform:rotate(180deg)}
+  .tm-sidebar-title{cursor:pointer;user-select:none;padding:2px 0}
 }
 @media(max-width:700px){
   .form-row,.form-row-3{grid-template-columns:1fr}
@@ -980,8 +992,11 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
         </div>
         <div id="tm-extra-wrap"></div>
       </div>
-      <div class="tm-sidebar">
-        <div class="tm-sidebar-title">Активность</div>
+      <div class="tm-sidebar" id="tm-sidebar">
+        <div class="tm-sidebar-title" onclick="toggleMobActivity()">
+          Активность
+          <span class="tm-activity-chevron" id="tm-activity-chevron">▼</span>
+        </div>
         <div id="tm-activity-feed" class="tm-activity-feed"></div>
         <div class="tm-comment-input-wrap">
           <textarea id="tm-comment-text" class="tm-comment-textarea" placeholder="Написать комментарий..." rows="2"></textarea>
@@ -1702,6 +1717,7 @@ window.printSelectCategory = printSelectCategory;
 window.printToggleType     = printToggleType;
 window.toggleMobSidebar    = toggleMobSidebar;
 window.closeMobSidebar     = closeMobSidebar;
+window.toggleMobActivity   = toggleMobActivity;
 window.printSelectFormat   = printSelectFormat;
 window.printSetRefFile     = printSetRefFile;
 window.printAddMatFiles    = printAddMatFiles;
@@ -2139,6 +2155,10 @@ function toggleMobSidebar(){
 function closeMobSidebar(){
   document.querySelector('.designer-sidebar').classList.remove('mob-open');
   document.getElementById('mob-overlay').classList.remove('show');
+}
+function toggleMobActivity(){
+  if(window.innerWidth>768)return;
+  document.getElementById('tm-sidebar').classList.toggle('mob-expanded');
 }
 
 function setFilter(f, el){
