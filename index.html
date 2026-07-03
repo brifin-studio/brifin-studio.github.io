@@ -854,6 +854,7 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
   <div class="tabs">
     <button class="tab-btn active" data-tab="create" onclick="switchTab('create')">＋ Создать задачу</button>
     <button class="tab-btn" data-tab="workload" onclick="switchTab('workload')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Задачи</button>
+    <button class="tab-btn" data-tab="archive" onclick="switchTab('archive')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="2" y="4" width="20" height="5" rx="1"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>Архив</button>
   </div>
 
   <!-- CREATE -->
@@ -927,6 +928,12 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
         <div class="kcol-body" id="col-done-c"></div>
       </div>
     </div>
+  </div>
+
+  <!-- ARCHIVE / CLIENT -->
+  <div id="tab-archive" class="hidden" style="flex:1;overflow:hidden;padding:0;display:flex;flex-direction:column">
+    <div style="padding:16px 20px 0;font-size:12px;color:var(--text-muted)">Показаны задачи, закрытые за последние 14 дней</div>
+    <div class="archive-grid" id="archive-list-client"></div>
   </div>
 </div>
 
@@ -2389,7 +2396,9 @@ function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.getElementById('tab-create').classList.toggle('hidden',tab!=='create');
   document.getElementById('tab-workload').classList.toggle('hidden',tab!=='workload');
-  if(tab==='workload') subscribeClientKanban();
+  document.getElementById('tab-archive').classList.toggle('hidden',tab!=='archive');
+  if(tab==='workload'||tab==='archive') subscribeClientKanban();
+  if(tab==='archive') renderArchive('client');
 }
 
 // ── TYPE GRID ──
@@ -2615,7 +2624,7 @@ function subscribeClientKanban(){
     lastTasks = [];
     snap.forEach(d => lastTasks.push({id:d.id,...d.data()}));
     const cols = {new:[],progress:[],review:[],done:[]};
-    lastTasks.forEach(t => {
+    lastTasks.filter(t=>!t.closed).forEach(t => {
       const s = t.status==='wip'?'progress':t.status||'new';
       if(cols[s]) cols[s].push(t); else cols.new.push(t);
     });
@@ -2625,6 +2634,7 @@ function subscribeClientKanban(){
       if(el) el.innerHTML = cols[s].length ? cols[s].map(t=>taskCard(t)).join('') : emptyCol();
       if(cnt) cnt.textContent = cols[s].length;
     });
+    renderArchive('client');
   });
 }
 
@@ -2699,8 +2709,8 @@ function subscribeKanban(){
 
 const ARCHIVE_RETENTION_DAYS=14;
 
-function renderArchive(){
-  const el=document.getElementById('archive-list');
+function renderArchive(scope){
+  const el=document.getElementById(scope==='client'?'archive-list-client':'archive-list');
   if(!el)return;
   const cutoff=Date.now()-ARCHIVE_RETENTION_DAYS*24*60*60*1000;
   const archived=lastTasks.filter(t=>t.closed&&(!t.closedAt?.seconds||t.closedAt.seconds*1000>=cutoff))
