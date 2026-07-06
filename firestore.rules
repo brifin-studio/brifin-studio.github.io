@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── DESIGNERS ──
+    // Anyone can read the designer list (clients need it to see who's assigned).
+    // Create is allowed with basic field validation.
+    // Update is allowed (designers update their own profile — no auth system).
+    // Delete is never allowed.
+    match /designers/{designerName} {
+      allow read: if true;
+
+      allow create: if request.resource.data.keys().hasAll(['name', 'color'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 50
+                    && request.resource.data.color is string;
+
+      allow update: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0;
+
+      allow delete: if false;
+    }
+
+    // ── TASKS ──
+    // Anyone with the link can read and write tasks (private team tool, no auth).
+    // Create requires at minimum: title, clientName, status, createdAt.
+    // Status must be one of the 4 known values.
+    // Delete is never allowed — use closed:true field instead.
+    match /tasks/{taskId} {
+      allow read: if true;
+
+      allow create: if request.resource.data.keys().hasAll(['title', 'clientName', 'status', 'createdAt'])
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() > 0
+                    && request.resource.data.title.size() <= 300
+                    && request.resource.data.clientName is string
+                    && request.resource.data.status in ['new', 'progress', 'review', 'done'];
+
+      allow update: if (!('status' in request.resource.data)
+                        || request.resource.data.status in ['new', 'progress', 'review', 'done'])
+                    && (!('title' in request.resource.data)
+                        || (request.resource.data.title is string
+                            && request.resource.data.title.size() > 0
+                            && request.resource.data.title.size() <= 300));
+
+      allow delete: if false;
+
+      // ── CHANGELOG ──
+      // Immutable audit trail: only create and read.
+      match /changelog/{entryId} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasAll(['who', 'ts'])
+                      && request.resource.data.who is string
+                      && request.resource.data.who.size() > 0;
+        allow update, delete: if false;
+      }
+
+      // ── COMMENTS ──
+      // Anyone can add a comment; comments cannot be edited or deleted.
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasAll(['author', 'text', 'ts'])
+                      && request.resource.data.author is string
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 3000;
+        allow update, delete: if false;
+      }
+    }
+  }
+}
