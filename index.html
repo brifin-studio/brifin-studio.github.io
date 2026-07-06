@@ -956,9 +956,9 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
     <div class="ds-logo" onclick="logout()" title="На главную">
       <img src="brifo/brifo.svg" alt="brifo" style="width:180px;height:auto;display:block">
     </div>
-    <div class="ds-profile">
-      <div class="ds-avatar" id="d-av" onclick="openProfileEdit()" title="Редактировать профиль" style="cursor:pointer"></div>
-      <div style="min-width:0;cursor:pointer" onclick="openProfileEdit()">
+    <div class="ds-profile" onclick="openProfileEdit()" title="Редактировать профиль">
+      <div class="ds-avatar" id="d-av"></div>
+      <div style="min-width:0">
         <div class="ds-name" id="d-nm">—</div>
         <div class="ds-edit-hint">редактировать</div>
       </div>
