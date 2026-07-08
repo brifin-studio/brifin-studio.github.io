@@ -124,6 +124,15 @@ label.field-label{display:block;color:var(--text-muted);font-size:11px;font-weig
 @keyframes float-b{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes float-c{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
 
+/* between the mobile layout and ~1290px, the centered hero (max-width:680px) and the
+   cards block (max-width:1040px) both span nearly the full canvas width, leaving no
+   safe gutter for any of the corner decorations — top ones would clump into the
+   heading/subtitle text, bottom ones would sit behind the (opaque) cards box and
+   disappear. Hide all four here instead of letting them collide or vanish. */
+@media(max-width:1290px) and (min-width:641px){
+  .deco-tasks,.deco-file,.deco-message,.deco-polaroid{display:none}
+}
+
 @media(max-width:640px){
   #login{padding:40px 20px 40px;align-items:center;justify-content:flex-start}
   .login-canvas{max-width:440px;aspect-ratio:unset}
